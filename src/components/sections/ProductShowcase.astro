@@ -1,0 +1,93 @@
+---
+import { products } from '../../data/products';
+
+const statusLabels: Record<string, { text: string; color: string }> = {
+  disponible: { text: '● Disponible', color: 'text-natural-400' },
+  proximamente: { text: '◐ Próximamente', color: 'text-human-400' },
+  agotado: { text: '○ Agotado', color: 'text-sage-400' },
+};
+---
+
+<section id="teclados" class="relative overflow-hidden bg-charcoal-600 py-[length:var(--space-section)]">
+  <!-- Subtle wood grain texture -->
+  <div class="pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true"
+    style="background-image: repeating-linear-gradient(90deg, var(--color-human-500) 0px, transparent 1px, transparent 30px); background-size: 31px 100%;">
+  </div>
+
+  <div class="mx-auto max-w-7xl px-6 lg:px-10">
+    <!-- Section Header -->
+    <div class="mb-16 lg:mb-20" data-animate="fade-up">
+      <span class="dev-annotation mb-2">// section: products</span>
+      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-sage-500">
+        Nuestros teclados
+      </p>
+      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-ivory-100">
+        Cada pieza, una historia
+      </h2>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid gap-6 sm:grid-cols-2 lg:gap-8" data-animate="stagger">
+      {products.map((product) => (
+        <div class="group relative overflow-hidden rounded-2xl border border-charcoal-400/50 bg-charcoal-500/50 transition-all duration-300 hover:-translate-y-1 hover:border-digital-500/20 hover:shadow-2xl">
+          <!-- Product Image Placeholder -->
+          <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-charcoal-500 to-charcoal-700">
+            <!-- Wood frame border -->
+            <div class="absolute inset-0 rounded-t-2xl" style={`box-shadow: inset 0 0 0 3px ${product.wood === 'Lenga' ? '#d4a574' : product.wood === 'Algarrobo' ? '#8b5e3c' : product.wood === 'Quebracho' ? '#6b2d1a' : '#e8d5b7'}20;`}></div>
+
+            <!-- Placeholder keyboard illustration -->
+            <div class="flex h-full items-center justify-center">
+              <svg viewBox="0 0 160 60" class="w-3/4 opacity-40">
+                <!-- Keyboard body -->
+                <rect x="5" y="10" width="150" height="40" rx="6" fill="var(--color-human-700)" opacity="0.5"/>
+                <rect x="8" y="12" width="144" height="36" rx="4" fill="var(--color-human-800)" opacity="0.3"/>
+                <!-- Key rows -->
+                {[0,1,2,3].map((row) => (
+                  <>
+                    {Array.from({length: 14 - row}).map((_, col) => (
+                      <rect
+                        x={10 + col * 10 + row * 3}
+                        y={14 + row * 9}
+                        width="8"
+                        height="7"
+                        rx="1"
+                        fill="var(--color-ivory-300)"
+                        opacity="0.15"
+                      />
+                    ))}
+                  </>
+                ))}
+              </svg>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="absolute top-4 right-4">
+              <span class={`inline-flex items-center rounded-full bg-charcoal-700/80 px-3 py-1 font-[var(--font-mono)] text-[10px] backdrop-blur-sm ${statusLabels[product.status].color}`}>
+                {statusLabels[product.status].text}
+              </span>
+            </div>
+          </div>
+
+          <!-- Product Info -->
+          <div class="p-6 lg:p-8">
+            <div class="mb-2 flex items-center justify-between">
+              <h3 class="text-[length:var(--text-h3)] font-semibold text-ivory-100">
+                {product.name}
+              </h3>
+              <span class="font-[var(--font-mono)] text-sm text-sage-400">
+                {product.price}
+              </span>
+            </div>
+            <p class="mb-4 text-sm font-light leading-relaxed text-sage-300">
+              {product.description}
+            </p>
+            <div class="flex items-center gap-2">
+              <span class="inline-block h-3 w-3 rounded-full" style={`background-color: ${product.wood === 'Lenga' ? '#d4a574' : product.wood === 'Algarrobo' ? '#8b5e3c' : product.wood === 'Quebracho' ? '#6b2d1a' : '#e8d5b7'};`}></span>
+              <span class="font-[var(--font-mono)] text-xs text-sage-400">{product.wood}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

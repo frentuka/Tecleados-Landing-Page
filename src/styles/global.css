@@ -1,0 +1,245 @@
+@import "tailwindcss";
+
+/* ============================================
+   TECLEADOS DESIGN SYSTEM
+   ============================================ */
+
+@theme {
+  /* === BRAND PILLAR COLORS === */
+
+  /* Digital — Electric Cyan */
+  --color-digital-50: #e6feff;
+  --color-digital-100: #b3fdff;
+  --color-digital-200: #80faff;
+  --color-digital-300: #4df7ff;
+  --color-digital-400: #1af3ff;
+  --color-digital-500: #00d4e6;
+  --color-digital-600: #00a8b8;
+  --color-digital-700: #007d8a;
+  --color-digital-800: #00535c;
+  --color-digital-900: #002a2e;
+
+  /* Natural — Organic Green */
+  --color-natural-50: #eef7ed;
+  --color-natural-100: #d4ebd1;
+  --color-natural-200: #a9d7a3;
+  --color-natural-300: #7ec375;
+  --color-natural-400: #5aad50;
+  --color-natural-500: #3d8a35;
+  --color-natural-600: #316e2a;
+  --color-natural-700: #255320;
+  --color-natural-800: #193716;
+  --color-natural-900: #0d1c0b;
+
+  /* Human — Warm Earth */
+  --color-human-50: #fef4eb;
+  --color-human-100: #fce3cc;
+  --color-human-200: #f9c799;
+  --color-human-300: #f6ab66;
+  --color-human-400: #f38f33;
+  --color-human-500: #e07316;
+  --color-human-600: #b35c11;
+  --color-human-700: #86450d;
+  --color-human-800: #5a2e09;
+  --color-human-900: #2d1704;
+
+  /* Ivory (warm whites) */
+  --color-ivory-50: #fefdfb;
+  --color-ivory-100: #faf8f3;
+  --color-ivory-200: #f5f0e6;
+  --color-ivory-300: #ede7d9;
+  --color-ivory-400: #e0d8c8;
+
+  /* Charcoal (warm darks) */
+  --color-charcoal-50: #f2f2f0;
+  --color-charcoal-100: #d8d8d5;
+  --color-charcoal-200: #a0a09b;
+  --color-charcoal-300: #6b6b65;
+  --color-charcoal-400: #3d3d38;
+  --color-charcoal-500: #2a2a26;
+  --color-charcoal-600: #1a1a18;
+  --color-charcoal-700: #141412;
+  --color-charcoal-800: #0e0e0c;
+  --color-charcoal-900: #080807;
+
+  /* Sage (gray-green neutral) */
+  --color-sage-50: #f4f6f4;
+  --color-sage-100: #e4e8e4;
+  --color-sage-200: #c9d1c9;
+  --color-sage-300: #adb9ad;
+  --color-sage-400: #8a9a8a;
+  --color-sage-500: #6b7d6b;
+  --color-sage-600: #546354;
+  --color-sage-700: #3d4a3d;
+  --color-sage-800: #273127;
+  --color-sage-900: #141a14;
+
+  /* === FONTS === */
+  --font-primary: 'Poppins', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* === FLUID TYPOGRAPHY === */
+  --text-hero: clamp(3rem, 6vw, 5.5rem);
+  --text-h1: clamp(2.25rem, 4vw, 3.5rem);
+  --text-h2: clamp(1.75rem, 3vw, 2.5rem);
+  --text-h3: clamp(1.25rem, 2vw, 1.75rem);
+  --text-body: clamp(1rem, 1.2vw, 1.125rem);
+  --text-small: clamp(0.875rem, 1vw, 0.9375rem);
+  --text-mono-sm: clamp(0.8125rem, 0.9vw, 0.875rem);
+
+  /* === SPACING === */
+  --space-section: clamp(5rem, 10vw, 8rem);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-ivory-100);
+  color: var(--color-charcoal-600);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-digital-500);
+  color: var(--color-charcoal-900);
+}
+
+/* ============================================
+   FONT FACES
+   ============================================ */
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes morphGradient1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes morphGradient2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(0.95); }
+  66% { transform: translate(25px, -35px) scale(1.05); }
+}
+
+@keyframes morphGradient3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, 40px) scale(1.08); }
+  66% { transform: translate(-30px, -25px) scale(0.92); }
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   PIXEL ART UTILITIES
+   ============================================ */
+
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   DEV MODE STYLES
+   ============================================ */
+
+[data-dev-mode] .dev-annotation {
+  display: block !important;
+}
+
+.dev-annotation {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-digital-500);
+  opacity: 0.7;
+}

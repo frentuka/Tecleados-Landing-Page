@@ -1,0 +1,99 @@
+---
+---
+
+<section id="contacto" class="relative overflow-hidden bg-charcoal-600 py-[length:var(--space-section)]">
+  <!-- Morphing gradient callback (lower opacity) -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="morphing-gradient-orb--cta absolute right-[20%] top-[30%] h-[300px] w-[300px] rounded-full opacity-[0.08] blur-[80px]"></div>
+    <div class="morphing-gradient-orb--cta-2 absolute left-[30%] bottom-[20%] h-[250px] w-[250px] rounded-full opacity-[0.06] blur-[80px]"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-3xl px-6 text-center lg:px-10">
+    <!-- Small Cube Logo -->
+    <div class="mb-10 inline-block" data-animate="scale-in">
+      <svg viewBox="0 0 200 200" class="h-20 w-20 mx-auto opacity-60" style="animation: float 4s ease-in-out infinite;">
+        <polygon points="100,100 30,65 30,135 100,170" fill="var(--color-digital-500)" opacity="0.7"/>
+        <polygon points="100,100 170,65 170,135 100,170" fill="var(--color-human-500)" opacity="0.7"/>
+        <polygon points="100,30 30,65 100,100 170,65" fill="var(--color-natural-500)" opacity="0.6"/>
+        <g transform="translate(100, 65)">
+          <polygon points="0,-20 -18,-10 0,0 18,-10" fill="var(--color-ivory-200)" opacity="0.8"/>
+          <polygon points="0,-20 -14,-12 0,-4 14,-12" fill="var(--color-ivory-100)" opacity="0.9"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- CTA Heading -->
+    <h2 class="mb-6 text-[length:var(--text-h1)] font-semibold leading-tight text-ivory-100" data-animate="fade-up">
+      Tu próximo teclado nace de un árbol
+    </h2>
+
+    <p class="mb-10 text-[length:var(--text-body)] font-light leading-relaxed text-sage-300 max-w-xl mx-auto" data-animate="fade-up">
+      Dejanos tu email y te avisamos cuando lancemos nuestra primera edición.
+      Cada unidad es limitada, cada pieza es irrepetible.
+    </p>
+
+    <!-- Email Form -->
+    <form id="contact-form" class="mx-auto flex max-w-md flex-col gap-3 sm:flex-row" data-animate="fade-up">
+      <div class="relative flex-1">
+        <input
+          type="email"
+          id="email-input"
+          placeholder="tu@email.com"
+          required
+          class="w-full rounded-xl border border-charcoal-400 bg-charcoal-500/50 px-5 py-3.5 font-[var(--font-mono)] text-sm text-ivory-200 placeholder-sage-500 outline-none transition-all duration-200 focus:border-digital-500 focus:ring-1 focus:ring-digital-500/30"
+        />
+      </div>
+      <button
+        type="submit"
+        class="rounded-xl bg-digital-500 px-7 py-3.5 text-sm font-semibold text-charcoal-900 transition-all duration-200 hover:bg-digital-400 active:scale-[0.98]"
+      >
+        Avisame
+      </button>
+    </form>
+
+    <!-- Success Message (hidden by default) -->
+    <div id="form-success" class="hidden mt-6">
+      <p class="font-[var(--font-mono)] text-sm text-natural-400">
+        ✓ ¡Listo! Te avisaremos cuando haya novedades.
+      </p>
+    </div>
+
+    <!-- Contact Link -->
+    <div class="mt-12" data-animate="fade-in">
+      <p class="text-sm text-sage-400 mb-2">¿Querés hablar directamente?</p>
+      <a href="mailto:hola@tecleados.com" class="font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-400 transition-colors hover:text-digital-300">
+        hola@tecleados.com
+      </a>
+    </div>
+
+    <!-- Dev annotation -->
+    <span class="dev-annotation mt-8">// section: cta | form: email-capture</span>
+  </div>
+</section>
+
+<style>
+  .morphing-gradient-orb--cta {
+    background: radial-gradient(circle, var(--color-digital-500), transparent 70%);
+    animation: morphGradient1 30s ease-in-out infinite;
+    mix-blend-mode: soft-light;
+  }
+  .morphing-gradient-orb--cta-2 {
+    background: radial-gradient(circle, var(--color-natural-500), transparent 70%);
+    animation: morphGradient2 35s ease-in-out infinite;
+    mix-blend-mode: soft-light;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('contact-form');
+  const success = document.getElementById('form-success');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = (document.getElementById('email-input') as HTMLInputElement)?.value;
+    if (email) {
+      form.classList.add('hidden');
+      success?.classList.remove('hidden');
+    }
+  });
+</script>

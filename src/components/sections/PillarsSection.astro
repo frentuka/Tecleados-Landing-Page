@@ -1,0 +1,116 @@
+---
+const pillars = [
+  {
+    name: 'Digital',
+    description: 'La nostalgia de la era 8-bit, los gráficos pixelados y la precisión tecnológica. Lo retro como lenguaje estético que conecta con una generación que creció entre píxeles.',
+    icon: 'digital' as const,
+    cardHover: 'hover:border-digital-500/30',
+    glowBg: 'bg-digital-500/5',
+    titleColor: 'text-digital-500',
+  },
+  {
+    name: 'Natural',
+    description: 'Maderas nativas argentinas, sustentabilidad y la riqueza orgánica de nuestra tierra. Cada veta cuenta la historia de un bosque, cada textura es irrepetible.',
+    icon: 'natural' as const,
+    cardHover: 'hover:border-natural-500/30',
+    glowBg: 'bg-natural-500/5',
+    titleColor: 'text-natural-500',
+  },
+  {
+    name: 'Humano',
+    description: 'La calidez del hogar, el trabajo artesanal y la conexión emocional con los objetos que nos acompañan. Tecnología que se siente viva al tacto.',
+    icon: 'human' as const,
+    cardHover: 'hover:border-human-500/30',
+    glowBg: 'bg-human-500/5',
+    titleColor: 'text-human-500',
+  },
+];
+---
+
+<section id="pilares" class="bg-ivory-100 py-[length:var(--space-section)]">
+  <div class="mx-auto max-w-7xl px-6 lg:px-10">
+    <!-- Section Header -->
+    <div class="mb-16 text-center lg:mb-20" data-animate="fade-up">
+      <span class="dev-annotation mb-2">// section: pillars</span>
+      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-sage-500">
+        Tres mundos, una esencia
+      </p>
+      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-charcoal-600">
+        Los Pilares
+      </h2>
+    </div>
+
+    <!-- Pillars Grid -->
+    <div class="grid gap-8 md:grid-cols-3 lg:gap-6" data-animate="stagger">
+      {pillars.map((pillar) => (
+        <div class:list={[
+          'group relative rounded-2xl border border-sage-200 bg-ivory-50 p-8 transition-all duration-300 hover:shadow-lg lg:p-10',
+          pillar.cardHover,
+        ]}>
+          <!-- Glow effect on hover -->
+          <div class:list={[
+            'pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100',
+            pillar.glowBg,
+          ]}></div>
+
+          <!-- Pixel Art Icon -->
+          <div class="relative mb-6">
+            <svg viewBox="0 0 32 32" class="h-16 w-16 pixel-art transition-transform duration-300 group-hover:scale-110">
+              {pillar.icon === 'digital' && (
+                <>
+                  <rect x="8" y="8" width="16" height="16" fill="var(--color-digital-500)" opacity="0.9"/>
+                  <rect x="10" y="10" width="12" height="12" fill="var(--color-digital-700)"/>
+                  <rect x="12" y="12" width="8" height="8" fill="var(--color-digital-400)"/>
+                  <rect x="14" y="14" width="4" height="4" fill="var(--color-digital-200)"/>
+                  <rect x="12" y="4" width="2" height="4" fill="var(--color-digital-500)"/>
+                  <rect x="18" y="4" width="2" height="4" fill="var(--color-digital-500)"/>
+                  <rect x="12" y="24" width="2" height="4" fill="var(--color-digital-500)"/>
+                  <rect x="18" y="24" width="2" height="4" fill="var(--color-digital-500)"/>
+                  <rect x="4" y="12" width="4" height="2" fill="var(--color-digital-500)"/>
+                  <rect x="4" y="18" width="4" height="2" fill="var(--color-digital-500)"/>
+                  <rect x="24" y="12" width="4" height="2" fill="var(--color-digital-500)"/>
+                  <rect x="24" y="18" width="4" height="2" fill="var(--color-digital-500)"/>
+                </>
+              )}
+              {pillar.icon === 'natural' && (
+                <>
+                  <rect x="14" y="22" width="4" height="8" fill="var(--color-human-600)"/>
+                  <rect x="10" y="16" width="12" height="6" fill="var(--color-natural-500)"/>
+                  <rect x="8" y="10" width="16" height="6" fill="var(--color-natural-400)"/>
+                  <rect x="12" y="4" width="8" height="6" fill="var(--color-natural-300)"/>
+                  <rect x="14" y="2" width="4" height="4" fill="var(--color-natural-500)"/>
+                </>
+              )}
+              {pillar.icon === 'human' && (
+                <>
+                  <rect x="8" y="16" width="16" height="12" fill="var(--color-human-500)"/>
+                  <rect x="10" y="18" width="4" height="4" fill="var(--color-human-300)"/>
+                  <rect x="18" y="18" width="4" height="4" fill="var(--color-human-300)"/>
+                  <rect x="14" y="22" width="4" height="6" fill="var(--color-human-700)"/>
+                  <polygon points="16,4 4,16 28,16" fill="var(--color-human-400)"/>
+                  <polygon points="16,6 6,16 26,16" fill="var(--color-human-600)"/>
+                </>
+              )}
+            </svg>
+          </div>
+
+          <!-- Pillar Name -->
+          <h3 class:list={[
+            'relative mb-3 text-[length:var(--text-h3)] font-semibold',
+            pillar.titleColor,
+          ]}>
+            {pillar.name}
+          </h3>
+
+          <!-- Description -->
+          <p class="relative text-[length:var(--text-body)] font-light leading-relaxed text-charcoal-300">
+            {pillar.description}
+          </p>
+
+          <!-- Dev annotation -->
+          <span class="dev-annotation mt-4">// pillar: {pillar.name.toLowerCase()}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

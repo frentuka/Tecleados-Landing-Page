@@ -1,0 +1,61 @@
+---
+import { testimonials } from '../../data/testimonials';
+---
+
+<section id="comunidad" class="bg-ivory-100 py-[length:var(--space-section)]">
+  <div class="mx-auto max-w-7xl px-6 lg:px-10">
+    <!-- Section Header -->
+    <div class="mb-16 text-center lg:mb-20" data-animate="fade-up">
+      <span class="dev-annotation mb-2">// section: community</span>
+      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-sage-500">
+        Comunidad
+      </p>
+      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-charcoal-600">
+        Lo que dicen los nuestros
+      </h2>
+    </div>
+
+    <!-- Testimonials Grid -->
+    <div class="grid gap-6 md:grid-cols-2 lg:gap-8" data-animate="stagger">
+      {testimonials.map((t) => (
+        <div class="group relative overflow-hidden rounded-2xl border border-sage-200 bg-ivory-50 p-8 transition-all duration-300 hover:border-digital-500/20 hover:shadow-lg lg:p-10">
+          <!-- Quote mark -->
+          <div class="absolute top-6 right-6 font-[var(--font-primary)] text-6xl font-bold text-sage-200/50 leading-none select-none" aria-hidden="true">
+            "
+          </div>
+
+          <div class="relative">
+            <!-- Avatar -->
+            <div class="mb-5 flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-charcoal-600 text-xl">
+                {t.avatar}
+              </div>
+              <div>
+                <p class="font-semibold text-charcoal-600">{t.name}</p>
+                <p class="font-[var(--font-mono)] text-xs text-sage-400">{t.role}</p>
+              </div>
+            </div>
+
+            <!-- Quote -->
+            <blockquote class="text-[length:var(--text-body)] font-light italic leading-relaxed text-charcoal-300">
+              "{t.quote}"
+            </blockquote>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Social Links -->
+    <div class="mt-16 flex flex-wrap items-center justify-center gap-6" data-animate="fade-up">
+      <p class="text-sm text-sage-400">Encontranos en</p>
+      {['Discord', 'Instagram', 'Reddit', 'GitHub'].map((platform) => (
+        <a
+          href="#"
+          class="rounded-lg border border-sage-200 px-4 py-2 font-[var(--font-mono)] text-xs text-sage-500 transition-all duration-200 hover:border-digital-500/30 hover:text-digital-500"
+        >
+          {platform}
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

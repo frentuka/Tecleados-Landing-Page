@@ -1,0 +1,141 @@
+---
+const navLinks = [
+  { href: '#teclados', label: 'Teclados' },
+  { href: '#proceso', label: 'Proceso' },
+  { href: '#maderas', label: 'Maderas' },
+  { href: '#comunidad', label: 'Comunidad' },
+];
+---
+
+<nav
+  data-nav
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+>
+  <div class="mx-auto max-w-7xl px-6 lg:px-10">
+    <div class="flex h-16 items-center justify-between lg:h-20">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2 group">
+        <svg class="h-8 w-8 lg:h-9 lg:w-9 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 32 32" fill="none">
+          <!-- Left face — Digital -->
+          <polygon points="16,18 6,13 6,23 16,28" fill="var(--color-digital-500)" opacity="0.85"/>
+          <!-- Right face — Human -->
+          <polygon points="16,18 26,13 26,23 16,28" fill="var(--color-human-500)" opacity="0.85"/>
+          <!-- Top face — Natural -->
+          <polygon points="16,8 6,13 16,18 26,13" fill="var(--color-natural-500)" opacity="0.75"/>
+          <!-- Keycap centered on top face -->
+          <g transform="translate(16, 13)">
+            <polygon points="0,-3.5 -4,-1.5 0,0.5 4,-1.5" fill="var(--color-ivory-200)"/>
+            <polygon points="0,-3.5 -3,-2 0,-0.5 3,-2" fill="var(--color-ivory-100)"/>
+          </g>
+        </svg>
+        <span class="font-[var(--font-primary)] text-lg font-semibold tracking-tight text-ivory-100 transition-colors">
+          Tecleados
+        </span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="hidden items-center gap-8 md:flex">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="font-[var(--font-primary)] text-sm font-medium text-ivory-200 transition-colors duration-200 hover:text-digital-400"
+          >
+            {link.label}
+          </a>
+        ))}
+        <!-- Dev Mode Toggle -->
+        <button
+          id="dev-mode-toggle"
+          class="ml-2 rounded-md border border-charcoal-400 px-2.5 py-1 font-[var(--font-mono)] text-xs text-sage-400 transition-all duration-200 hover:border-digital-500 hover:text-digital-400"
+          aria-label="Activar modo desarrollador"
+        >
+          &lt;/&gt;
+        </button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-toggle"
+        class="flex h-10 w-10 items-center justify-center rounded-lg md:hidden text-ivory-200"
+        aria-label="Abrir menú"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-[60] hidden bg-charcoal-700/98 backdrop-blur-lg"
+>
+  <div class="flex h-full flex-col items-center justify-center gap-8">
+    <button
+      id="mobile-menu-close"
+      class="absolute top-5 right-6 text-ivory-200"
+      aria-label="Cerrar menú"
+    >
+      <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        class="mobile-menu-link font-[var(--font-primary)] text-2xl font-semibold text-ivory-100 transition-colors hover:text-digital-400"
+      >
+        {link.label}
+      </a>
+    ))}
+    <button
+      class="dev-mode-toggle-mobile mt-4 rounded-md border border-charcoal-400 px-4 py-2 font-[var(--font-mono)] text-sm text-sage-400 transition-all duration-200 hover:border-digital-500 hover:text-digital-400"
+    >
+      &lt;/&gt; dev mode
+    </button>
+  </div>
+</div>
+
+<style>
+  nav {
+    background: transparent;
+  }
+  nav.nav-scrolled {
+    background: rgba(26, 26, 24, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201, 209, 201, 0.1);
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const close = document.getElementById('mobile-menu-close');
+  const links = menu?.querySelectorAll('.mobile-menu-link');
+
+  function openMenu() {
+    menu?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    menu?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  toggle?.addEventListener('click', openMenu);
+  close?.addEventListener('click', closeMenu);
+  links?.forEach((link) => link.addEventListener('click', closeMenu));
+
+  // Dev mode toggles
+  const devToggles = document.querySelectorAll('#dev-mode-toggle, .dev-mode-toggle-mobile');
+  devToggles.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.documentElement.toggleAttribute('data-dev-mode');
+      closeMenu();
+    });
+  });
+</script>
