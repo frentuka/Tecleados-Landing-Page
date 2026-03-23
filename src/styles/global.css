@@ -110,10 +110,10 @@
   --t-text-dim: var(--color-sage-600);
   --t-border: rgba(61, 61, 56, 0.5);
   --t-border-solid: var(--color-charcoal-400);
-  --t-nav-bg: var(--color-charcoal-800);
-  --t-key-bg: var(--color-charcoal-600);
-  --t-key-shadow: var(--color-charcoal-700);
-  --t-key-active-bg: var(--color-charcoal-700);
+  --t-nav-bg: rgba(14, 14, 12, 0.45);
+  --t-key-bg: rgba(42, 42, 38, 0.5);
+  --t-key-shadow: rgba(20, 20, 18, 0.4);
+  --t-key-active-bg: rgba(42, 42, 38, 0.7);
 }
 
 [data-theme="light"] {
@@ -126,10 +126,10 @@
   --t-text-dim: var(--color-sage-400);
   --t-border: var(--color-sage-200);
   --t-border-solid: var(--color-sage-300);
-  --t-nav-bg: var(--color-ivory-200);
-  --t-key-bg: var(--color-ivory-100);
-  --t-key-shadow: var(--color-ivory-300);
-  --t-key-active-bg: var(--color-ivory-200);
+  --t-nav-bg: rgba(235, 218, 190, 0.4);
+  --t-key-bg: rgba(245, 240, 230, 0.45);
+  --t-key-shadow: rgba(210, 195, 170, 0.35);
+  --t-key-active-bg: rgba(237, 231, 217, 0.6);
 }
 
 /* Theme utility classes */
@@ -264,8 +264,71 @@ body {
 /* Elements with data-enter start hidden — the view engine reveals them */
 .view [data-enter] {
   opacity: 0;
-  transform: translateY(10px);
 }
+
+/* Custom-animated elements: no default Y-offset (animation owns from-state) */
+.view [data-enter][data-anim] {
+  transform: none;
+}
+
+/* Default entrance: smooth slide-up (elements with no data-anim) */
+.view [data-enter].enter-active:not([data-anim]) {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+/* ============================================
+   ENTRANCE ANIMATIONS — per-element, per-view
+   Every page has its own motion language.
+   ============================================ */
+
+/* ── INICIO: Big Bang / spring physics ── */
+.view [data-enter].enter-active[data-anim="spring-pop"]      { animation: spring-pop 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="hero-title"]      { animation: hero-title 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="glitch-slide"]    { animation: glitch-slide 0.58s ease both; }
+.view [data-enter].enter-active[data-anim="hint-pop"]        { animation: hint-pop 0.48s ease both; }
+
+/* ── HISTORIA: 3-D card flip reveal ── */
+.view [data-enter].enter-active[data-anim="header-arch"]     { animation: header-arch 0.60s ease both; }
+.view [data-enter].enter-active[data-anim="card-flip-left"]  { animation: card-flip-left 0.65s ease both; }
+.view [data-enter].enter-active[data-anim="card-flip-center"]{ animation: card-flip-center 0.65s ease both; }
+.view [data-enter].enter-active[data-anim="card-flip-right"] { animation: card-flip-right 0.65s ease both; }
+
+/* ── TECLADOS: Film-reel / tape pull ── */
+.view [data-enter].enter-active[data-anim="tape-header"]     { animation: tape-header 0.55s ease both; }
+.view [data-enter].enter-active[data-anim="tape-carousel"]   { animation: tape-carousel 0.70s ease both; }
+.view [data-enter].enter-active[data-anim="dots-align"]      { animation: dots-align 0.52s ease both; }
+
+/* ── PROCESO: Factory / gravity drop ── */
+.view [data-enter].enter-active[data-anim="factory-header"]  { animation: factory-header 0.64s ease both; }
+.view [data-enter].enter-active[data-anim="node-drop"]       { animation: node-drop 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="connector-draw"]  { animation: connector-draw 0.40s ease both; }
+.view [data-enter].enter-active[data-anim="detail-blur-reveal"] { animation: detail-blur-reveal 0.52s ease both; }
+
+/* ── MADERAS: Organic growth from earth ── */
+.view [data-enter].enter-active[data-anim="wood-title-bloom"]{ animation: wood-title-bloom 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="wood-grow-1"]     { animation: wood-grow-1 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="wood-grow-2"]     { animation: wood-grow-2 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="wood-grow-3"]     { animation: wood-grow-3 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="wood-grow-4"]     { animation: wood-grow-4 0.72s ease both; }
+.view [data-enter].enter-active[data-anim="quote-materialize"]{ animation: quote-materialize 0.65s ease both; }
+
+/* ── SPECS: Terminal data slam ── */
+.view [data-enter].enter-active[data-anim="data-header"]     { animation: data-header 0.55s ease both; }
+.view [data-enter].enter-active[data-anim="slam-left"]       { animation: slam-left 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="slam-top"]        { animation: slam-top 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="slam-right"]      { animation: slam-right 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="terminal-blink-in"] { animation: terminal-blink-in 0.55s ease both; }
+
+/* ── CONTACTO: Orbital / cosmic entry ── */
+.view [data-enter].enter-active[data-anim="spiral-cube"]     { animation: spiral-cube 0.82s ease both; }
+.view [data-enter].enter-active[data-anim="cta-title"]       { animation: cta-title 0.62s ease both; }
+.view [data-enter].enter-active[data-anim="drift-diagonal"]  { animation: drift-diagonal 0.52s ease both; }
+.view [data-enter].enter-active[data-anim="form-materialize"]{ animation: form-materialize 0.58s ease both; }
+.view [data-enter].enter-active[data-anim="testimonial-rise"]{ animation: testimonial-rise 0.56s ease both; }
+.view [data-enter].enter-active[data-anim="social-pop"]      { animation: social-pop 0.46s ease both; }
+.view [data-enter].enter-active[data-anim="glow-reveal"]     { animation: glow-reveal 0.46s ease both; }
 
 /* ============================================
    NAVIGATION BAR
@@ -279,6 +342,8 @@ body {
   height: var(--nav-height);
   z-index: 50;
   background: var(--t-nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--t-border);
   display: flex;
   align-items: center;
@@ -493,6 +558,237 @@ body {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
+}
+
+/* ============================================
+   PER-VIEW ENTRANCE ANIMATIONS
+   Each view has its own motion language.
+   ============================================ */
+
+/* ── INICIO: Big Bang — spring physics ── */
+
+@keyframes spring-pop {
+  0%   { opacity: 0; transform: scale(0) rotate(-20deg); }
+  55%  { opacity: 1; transform: scale(1.18) rotate(6deg); }
+  75%  { transform: scale(0.93) rotate(-3deg); }
+  90%  { transform: scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes hero-title {
+  0%   { opacity: 0; transform: translateY(-32px) scaleX(1.12) skewX(-5deg); }
+  58%  { opacity: 1; transform: translateY(6px) scaleX(0.98) skewX(1deg); }
+  100% { opacity: 1; transform: translateY(0) scaleX(1) skewX(0deg); }
+}
+
+@keyframes glitch-slide {
+  0%   { opacity: 0; transform: translateX(-28px); clip-path: inset(0 100% 0 0); }
+  35%  { opacity: 1; transform: translateX(5px); clip-path: inset(0 28% 0 0); }
+  65%  { transform: translateX(-2px); clip-path: inset(0 4% 0 0); }
+  100% { opacity: 1; transform: translateX(0); clip-path: inset(0 0% 0 0); }
+}
+
+@keyframes hint-pop {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.78); }
+  62%  { opacity: 1; transform: translateY(-5px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── HISTORIA: 3-D card flip reveal ── */
+
+@keyframes header-arch {
+  0%   { opacity: 0; transform: translateY(-46px) scaleX(0.62); }
+  56%  { opacity: 1; transform: translateY(8px) scaleX(1.04); }
+  100% { opacity: 1; transform: translateY(0) scaleX(1); }
+}
+
+@keyframes card-flip-left {
+  0%   { opacity: 0; transform: perspective(900px) rotateY(-88deg) translateZ(-50px); }
+  56%  { opacity: 1; transform: perspective(900px) rotateY(13deg) translateZ(10px); }
+  100% { opacity: 1; transform: perspective(900px) rotateY(0deg) translateZ(0); }
+}
+
+@keyframes card-flip-center {
+  0%   { opacity: 0; transform: perspective(900px) rotateX(-72deg) scale(0.65); }
+  56%  { opacity: 1; transform: perspective(900px) rotateX(11deg) scale(1.05); }
+  100% { opacity: 1; transform: perspective(900px) rotateX(0deg) scale(1); }
+}
+
+@keyframes card-flip-right {
+  0%   { opacity: 0; transform: perspective(900px) rotateY(88deg) translateZ(-50px); }
+  56%  { opacity: 1; transform: perspective(900px) rotateY(-13deg) translateZ(10px); }
+  100% { opacity: 1; transform: perspective(900px) rotateY(0deg) translateZ(0); }
+}
+
+/* ── TECLADOS: Film-reel / tape pull ── */
+
+@keyframes tape-header {
+  0%   { opacity: 0; transform: translateX(-58px) skewX(12deg); }
+  56%  { opacity: 1; transform: translateX(10px) skewX(-2.5deg); }
+  100% { opacity: 1; transform: translateX(0) skewX(0deg); }
+}
+
+@keyframes tape-carousel {
+  0%   { opacity: 0; transform: translateX(75px) rotate(3.5deg) scale(0.90); }
+  50%  { opacity: 1; transform: translateX(-14px) rotate(-1.2deg) scale(1.02); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
+}
+
+@keyframes dots-align {
+  0%   { opacity: 0; transform: scale(4) translateY(14px); }
+  48%  { opacity: 1; transform: scale(0.55) translateY(-5px); }
+  72%  { transform: scale(1.18) translateY(3px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── PROCESO: Factory / gravity drop ── */
+
+@keyframes factory-header {
+  0%   { opacity: 0; transform: translateY(-58px) scaleY(0.38); }
+  50%  { opacity: 1; transform: translateY(11px) scaleY(1.10); }
+  76%  { transform: translateY(-5px) scaleY(0.96); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+@keyframes node-drop {
+  0%   { opacity: 0; transform: translateY(-60px) scale(0.2); }
+  46%  { opacity: 1; transform: translateY(14px) scale(1.22); }
+  66%  { transform: translateY(-7px) scale(0.88); }
+  82%  { transform: translateY(5px) scale(1.08); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes connector-draw {
+  0%   { opacity: 0; transform: scaleX(0); transform-origin: left center; }
+  60%  { opacity: 1; transform: scaleX(1.15); transform-origin: left center; }
+  100% { opacity: 1; transform: scaleX(1); transform-origin: left center; }
+}
+
+@keyframes detail-blur-reveal {
+  0%   { opacity: 0; transform: translateX(-24px); filter: blur(8px); }
+  56%  { opacity: 1; transform: translateX(6px); filter: blur(1px); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+/* ── MADERAS: Organic growth from earth ── */
+
+@keyframes wood-title-bloom {
+  0%   { opacity: 0; transform: scale(1.12); filter: blur(12px) saturate(0.15); }
+  52%  { opacity: 1; filter: blur(2.5px) saturate(0.65); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0) saturate(1); }
+}
+
+@keyframes wood-grow-1 {
+  0%   { opacity: 0; transform: translateY(58px) translateX(-20px) scale(0.62) rotate(-5deg); }
+  50%  { opacity: 1; transform: translateY(-12px) translateX(4px) scale(1.06) rotate(1.8deg); }
+  100% { opacity: 1; transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+}
+
+@keyframes wood-grow-2 {
+  0%   { opacity: 0; transform: translateY(58px) translateX(20px) scale(0.62) rotate(5deg); }
+  50%  { opacity: 1; transform: translateY(-12px) translateX(-4px) scale(1.06) rotate(-1.8deg); }
+  100% { opacity: 1; transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+}
+
+@keyframes wood-grow-3 {
+  0%   { opacity: 0; transform: translateY(58px) translateX(-12px) scale(0.68) rotate(-2.5deg); }
+  55%  { opacity: 1; transform: translateY(-8px) translateX(3px) scale(1.04) rotate(1deg); }
+  100% { opacity: 1; transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+}
+
+@keyframes wood-grow-4 {
+  0%   { opacity: 0; transform: translateY(58px) translateX(12px) scale(0.68) rotate(2.5deg); }
+  55%  { opacity: 1; transform: translateY(-8px) translateX(-3px) scale(1.04) rotate(-1deg); }
+  100% { opacity: 1; transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+}
+
+@keyframes quote-materialize {
+  0%   { opacity: 0; transform: scale(0.86) translateY(24px); filter: blur(6px); }
+  56%  { opacity: 1; transform: scale(1.04) translateY(-5px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+/* ── SPECS: Terminal data slam ── */
+
+@keyframes data-header {
+  0%   { opacity: 0; transform: translateY(-24px); clip-path: inset(0 0 100% 0); }
+  42%  { opacity: 1; clip-path: inset(0 0 28% 0); }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0% 0); }
+}
+
+@keyframes slam-left {
+  0%   { opacity: 0; transform: translateX(-90px) scaleX(0.45); }
+  50%  { opacity: 1; transform: translateX(16px) scaleX(1.05); }
+  76%  { transform: translateX(-6px) scaleX(0.97); }
+  100% { opacity: 1; transform: translateX(0) scaleX(1); }
+}
+
+@keyframes slam-top {
+  0%   { opacity: 0; transform: translateY(-80px) scaleY(0.42); }
+  50%  { opacity: 1; transform: translateY(14px) scaleY(1.09); }
+  76%  { transform: translateY(-6px) scaleY(0.96); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+@keyframes slam-right {
+  0%   { opacity: 0; transform: translateX(90px) scaleX(0.45); }
+  50%  { opacity: 1; transform: translateX(-16px) scaleX(1.05); }
+  76%  { transform: translateX(6px) scaleX(0.97); }
+  100% { opacity: 1; transform: translateX(0) scaleX(1); }
+}
+
+@keyframes terminal-blink-in {
+  0%   { opacity: 0; }
+  22%  { opacity: 1; }
+  38%  { opacity: 0; }
+  58%  { opacity: 1; }
+  74%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ── CONTACTO: Orbital / cosmic entry ── */
+
+@keyframes spiral-cube {
+  0%   { opacity: 0; transform: rotate(-225deg) scale(0) translateY(48px); }
+  52%  { opacity: 1; transform: rotate(20deg) scale(1.22) translateY(-12px); }
+  76%  { transform: rotate(-6deg) scale(0.93) translateY(5px); }
+  100% { opacity: 1; transform: rotate(0deg) scale(1) translateY(0); }
+}
+
+@keyframes cta-title {
+  0%   { opacity: 0; transform: translateY(34px) scale(0.91); }
+  53%  { opacity: 1; transform: translateY(-7px) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes drift-diagonal {
+  0%   { opacity: 0; transform: translateX(-20px) translateY(20px) rotate(-3deg); }
+  56%  { opacity: 1; transform: translateX(5px) translateY(-5px) rotate(0.6deg); }
+  100% { opacity: 1; transform: translateX(0) translateY(0) rotate(0deg); }
+}
+
+@keyframes form-materialize {
+  0%   { opacity: 0; transform: scaleX(0.22) scaleY(0.55); }
+  50%  { opacity: 1; transform: scaleX(1.05) scaleY(1.04); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(1); }
+}
+
+@keyframes testimonial-rise {
+  0%   { opacity: 0; transform: translateY(35px) translateX(25px) rotate(3deg); }
+  55%  { opacity: 1; transform: translateY(-7px) translateX(-5px) rotate(-0.6deg); }
+  100% { opacity: 1; transform: translateY(0) translateX(0) rotate(0deg); }
+}
+
+@keyframes social-pop {
+  0%   { opacity: 0; transform: scale(0) rotate(50deg); }
+  60%  { opacity: 1; transform: scale(1.28) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes glow-reveal {
+  0%   { opacity: 0; transform: scale(0.72); filter: brightness(2.8); }
+  48%  { opacity: 1; transform: scale(1.08); filter: brightness(1.5); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
 }
 
 /* ============================================

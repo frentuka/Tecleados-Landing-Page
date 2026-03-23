@@ -11,7 +11,7 @@ import { processSteps } from '../../data/process-steps';
   <!-- Content -->
   <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
     <div class="mx-auto w-full max-w-4xl">
-      <div data-enter class="mb-8 text-center lg:mb-10">
+      <div data-enter data-anim="factory-header" data-anim-duration="0.55s" class="mb-8 text-center lg:mb-10">
         <p class="t-text-muted mb-2 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em]">
           El proceso
         </p>
@@ -20,7 +20,7 @@ import { processSteps } from '../../data/process-steps';
         </h2>
       </div>
 
-      <div data-enter class="mb-8 flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
+      <div data-enter data-anim="node-drop" data-anim-duration="0.7s" class="mb-8 flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
         {processSteps.map((step, i) => (
           <>
             <button
@@ -37,7 +37,7 @@ import { processSteps } from '../../data/process-steps';
         ))}
       </div>
 
-      <div data-enter class="mx-auto max-w-2xl text-center">
+      <div data-enter data-anim="detail-blur-reveal" data-anim-duration="0.55s" class="mx-auto max-w-2xl text-center">
         {processSteps.map((step, i) => (
           <div class={`step-detail ${i === 0 ? 'step-detail--active' : ''}`} data-step-detail={i}>
             <h3 class="mb-3 text-[length:var(--text-h2)] font-semibold">

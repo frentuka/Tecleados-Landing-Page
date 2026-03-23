@@ -109,33 +109,33 @@ interface WoodPalette {
   latewood: RGB[];    // 2-3 colors for the dark grain lines
 }
 
-// Dark mode: sleek ebony / dark stained wood
+// Dark mode: dark walnut / rich chocolate brown
 const darkPalette: WoodPalette = {
-  bg: [20, 20, 18],
+  bg: [16, 9, 4],
   earlywood: [
-    [38, 35, 30],     // dark warm
-    [48, 42, 34],     // mid
-    [56, 48, 38],     // lightest early (still dark)
+    [40, 24, 11],     // deep chocolate
+    [54, 33, 15],     // warm dark brown
+    [68, 43, 20],     // medium dark brown
   ],
   latewood: [
-    [16, 15, 12],     // deepest dark line
-    [24, 22, 18],     // mid dark line
-    [32, 28, 22],     // lighter dark line
+    [10, 5, 2],       // espresso / near black
+    [19, 10, 5],      // very dark brown
+    [29, 16, 8],      // dark grain line
   ],
 };
 
-// Light mode: bleached / limed oak
+// Light mode: Algarrobo blanco (Argentine carob) — warm honey with reddish grain
 const lightPalette: WoodPalette = {
-  bg: [250, 248, 243],
+  bg: [218, 180, 128],
   earlywood: [
-    [240, 236, 228],  // lightest
-    [235, 228, 218],  // mid
-    [228, 220, 208],  // darkest early
+    [228, 192, 140],  // pale honey
+    [215, 176, 120],  // warm honey
+    [200, 158, 98],   // golden amber
   ],
   latewood: [
-    [195, 182, 165],  // darkest line
-    [210, 200, 185],  // mid
-    [222, 214, 202],  // lightest line
+    [108, 60, 20],    // deep reddish-brown grain line
+    [133, 80, 34],    // medium warm brown
+    [158, 104, 54],   // lighter brown line
   ],
 };
 
@@ -198,6 +198,9 @@ export function initWoodGrainBackground() {
 
   // Seeded PRNG for deterministic randomness within a single render
   let _rngState = globalSeed;
+  // Snapshot taken once — restored before every render so theme/resize switches
+  // never change the pattern (same knots, offsets, ring density every time).
+  const renderSeed = globalSeed;
   function rng(): number {
     _rngState = (_rngState * 16807 + 0) % 2147483647;
     return (_rngState - 1) / 2147483646;
@@ -232,6 +235,10 @@ export function initWoodGrainBackground() {
   // ═══════════════════════════════════════════════════════════════════════════
 
   function renderWoodGrain() {
+    // Restore rng to the initial snapshot so every re-render (theme switch,
+    // resize) produces the exact same pattern — only the palette changes.
+    _rngState = renderSeed;
+
     // Render at reduced resolution for performance
     const scale = 0.5;
     const pw = Math.ceil(W * scale);
@@ -244,9 +251,9 @@ export function initWoodGrainBackground() {
     const imageData = octx.createImageData(pw, ph);
     const data = imageData.data;
 
-    // Generate knots — more of them for richer character
+    // Generate knots — sparse, like real wood
     const area = W * H;
-    const knotCount = Math.max(3, Math.floor(area / 180000));
+    const knotCount = Math.max(2, Math.floor(area / 600000));
     const knots = generateKnots(rng, knotCount);
 
     // Random offsets to make each render unique even with same noise
@@ -257,6 +264,11 @@ export function initWoodGrainBackground() {
 
     // Ring density — how many ring cycles are visible
     const ringDensity = 10 + rng() * 6;
+
+    // Knot core color — very dark dead wood (paper: dead knots appear dark/black)
+    const knotCoreR = palette.latewood[0][0] * 0.30;
+    const knotCoreG = palette.latewood[0][1] * 0.28;
+    const knotCoreB = palette.latewood[0][2] * 0.25;
 
     for (let py = 0; py < ph; py++) {
       for (let px = 0; px < pw; px++) {
@@ -289,8 +301,8 @@ export function initWoodGrainBackground() {
         const warp1y = fbm(along * 2.0 + offsetB + 100, across * 4.0 + offsetB + 100, 4);
 
         // Anisotropic: strong warp perpendicular to grain, gentle along grain
-        const warpedAcross = across + warp1y * 0.06;
-        const warpedAlong = along + warp1x * 0.02;
+        const warpedAcross = across + warp1y * 0.05;
+        const warpedAlong = along + warp1x * 0.018;
 
         // Second warp layer: medium-scale detail
         const warp2 = fbm(
@@ -298,37 +310,78 @@ export function initWoodGrainBackground() {
           warpedAcross * 8.0 + offsetC + 200,
           3
         );
-        const finalAcross = warpedAcross + warp2 * 0.02;
+        const finalAcross = warpedAcross + warp2 * 0.016;
 
-        // ── KNOT DISTORTION ──
-        // Near knots, the "across" coordinate blends toward radial distance,
-        // making rings become concentric around the knot center.
+        // ── KNOT DEFLECTION — potential-flow field ──
+        //
+        // Architecture: knots are placed first, then the grain scalar field is
+        // constructed so its contours (grain lines) naturally flow around each
+        // knot — never through it.
+        //
+        // Mathematics: 2-D potential flow stream function around a unit circle.
+        //   ψ = across  −  dc·ry / max(1, r²)
+        // where r² = da²+dc² in normalised knot coordinates.
+        //
+        //  • r² < 1 (inside knot):  r²→1, so ψ→knot.py — field is constant,
+        //    no trunk-ring contours appear inside the knot at all.
+        //  • r² = 1 (boundary):     ψ = knot.py  (dividing streamline)
+        //  • r² >> 1 (far away):    correction → 0, ψ → across  (straight grain)
+        //
+        // The 1/r² falloff provides natural attenuation — no explicit blending.
         let grainValue = finalAcross;
+        let knotDarken  = 0;
+        let knotOverride = 0;
+        let knotRingLate = 0;
 
         for (const knot of knots) {
-          // Distance from knot center in grain-space (elliptical)
           const da = (warpedAlong - knot.px) / knot.rx;
           const dc = (finalAcross - knot.py) / knot.ry;
-          const ellipDist = Math.sqrt(da * da + dc * dc);
+          const r2 = da * da + dc * dc;
+          const r2s = Math.max(1.0, r2);
 
-          if (ellipDist < 3.0) {
-            // Blend between straight grain and concentric rings
-            // Closer to knot center = more concentric
-            const blend = Math.exp(-ellipDist * 1.2) * knot.strength;
+          // ── Potential-flow grain deflection ──
+          // Larger radius lets curvature spread naturally down the plank.
+          // Inside the ellipse (r2 < 1) force full deflection regardless of
+          // knot.strength so grain lines never cut through the knot core.
+          if (r2 < 50.0) {
+            const s = r2 < 1.0 ? 1.0 : knot.strength;
+            grainValue -= (dc * knot.ry / r2s) * s;
+          }
 
-            // Radial distance creates concentric rings
-            const radialGrain = ellipDist * knot.ry * 0.5 + knot.py;
+          // ── Inner zone: knot's own concentric ring system ──
+          const ellipDist = Math.sqrt(r2);
+          if (ellipDist < 1.1) {
+            const knx = (warpedAlong - knot.px) * 7.0 + knot.px * 60;
+            const kny = (finalAcross  - knot.py) * 7.0 + knot.py * 60;
+            const knotNoise = fbm(knx, kny, 3);
+            const perturbedDist = ellipDist + knotNoise * 0.20 * Math.exp(-ellipDist * 2.2);
+            const spacingVar = fbm(knx * 0.4 + 40, kny * 0.4 + 40, 2);
+            const baseRings = knot.ry * ringDensity * 3.0;
+            const knotPhase = perturbedDist * (baseRings + spacingVar * 0.4) * Math.PI * 2;
+            // cos instead of sin: cos(0)=1 → knotProfile=1 → knotLate=0 (earlywood)
+            // at the knot centre, so no dark ring dot there. knotDarken handles
+            // the dead-wood core colour separately.
+            const knotAbsCos = Math.abs(Math.cos(knotPhase));
+            const knotProfile = Math.pow(knotAbsCos, 0.35);
+            const knotLate = 1.0 - knotProfile;
 
-            grainValue = grainValue * (1 - blend) + radialGrain * blend;
+            const t = ellipDist / 1.1;
+            const weight = (1.0 - t * t * (3.0 - 2.0 * t)) * knot.strength;
+            if (weight > knotOverride) {
+              knotOverride = weight;
+              knotRingLate = knotLate;
+            }
 
-            // Also add tight ring oscillation near knot
-            if (ellipDist < 2.0 && ellipDist > 0.15) {
-              const ringOsc = Math.sin(ellipDist * knot.ringTightness) *
-                Math.exp(-ellipDist * 1.5) * 0.008 * knot.strength;
-              grainValue += ringOsc;
+            if (ellipDist < 0.22) {
+              const pith = (1.0 - ellipDist / 0.22) * 0.55 * knot.strength;
+              knotDarken = Math.max(knotDarken, pith);
             }
           }
         }
+
+        // Growth ring irregularity — real trees grow unevenly year to year
+        const growthVar = fbm(grainValue * 5.0 + offsetD, warpedAlong * 3.0, 2);
+        grainValue += growthVar * 0.008;
 
         // ── RING PATTERN ──
         // Asymmetric profile: wide smooth earlywood, narrow sharp latewood
@@ -360,16 +413,21 @@ export function initWoodGrainBackground() {
         const earlyColor = sampleGradient(palette.earlywood, colorT);
         const lateColor = sampleGradient(palette.latewood, colorT);
 
-        // Blend earlywood ↔ latewood based on ring profile
-        const [r, g, b] = lerpRGB(earlyColor, lateColor, latewoodIntensity);
+        // Overlay knot rings on top of the existing grain — never replace it.
+        // The outer warp already curves grain lines around the knot; here we
+        // add concentric ring lines between them. Math.max keeps whichever
+        // pattern is darker at each pixel, so both coexist.
+        const finalLatewood = Math.max(latewoodIntensity, knotRingLate * knotOverride);
+        const [r, g, b] = lerpRGB(earlyColor, lateColor, finalLatewood);
 
         // ── SUBTLE DEPTH ──
         const depth = fbm(nx * 6 + 500, ny * 6 + 500, 2);
         const brightness = 0.96 + depth * 0.08;
 
-        data[idx] = Math.max(0, Math.min(255, r * brightness));
-        data[idx + 1] = Math.max(0, Math.min(255, g * brightness));
-        data[idx + 2] = Math.max(0, Math.min(255, b * brightness));
+        // Blend toward dark dead-wood core where knotDarken > 0
+        data[idx]     = Math.max(0, Math.min(255, r * brightness * (1 - knotDarken) + knotCoreR * knotDarken));
+        data[idx + 1] = Math.max(0, Math.min(255, g * brightness * (1 - knotDarken) + knotCoreG * knotDarken));
+        data[idx + 2] = Math.max(0, Math.min(255, b * brightness * (1 - knotDarken) + knotCoreB * knotDarken));
         data[idx + 3] = 255;
       }
     }
@@ -429,15 +487,15 @@ export function initWoodGrainBackground() {
         const w3 = fbm(wl * 5.0, wa * 8.0 + 200, 2);
         let finalAcross = wa + w3 * 0.02;
 
-        // Knot bending
+        // Knot bending — same potential-flow formula as the pixel pass
         for (const knot of knots) {
           const da = (wl - knot.px) / knot.rx;
           const dc = (finalAcross - knot.py) / knot.ry;
-          const ed = Math.sqrt(da * da + dc * dc);
-          if (ed < 3.0) {
-            const blend = Math.exp(-ed * 1.2) * knot.strength;
-            const radial = ed * knot.ry * 0.5 + knot.py;
-            finalAcross = finalAcross * (1 - blend) + radial * blend;
+          const r2 = da * da + dc * dc;
+          if (r2 < 50.0) {
+            const r2s = Math.max(1.0, r2);
+            const s = r2 < 1.0 ? 1.0 : knot.strength;
+            finalAcross -= (dc * knot.ry / r2s) * s;
           }
         }
 
@@ -485,32 +543,6 @@ export function initWoodGrainBackground() {
     ctx.drawImage(offscreen, 0, 0, W, H);
   }
 
-  // ─── Mouse parallax ───
-  let targetOX = 0, targetOY = 0;
-  let curOX = 0, curOY = 0;
-  let animId = 0;
-  let parallaxActive = false;
-
-  function onMouseMove(e: MouseEvent) {
-    targetOX = (e.clientX / W - 0.5) * -6;
-    targetOY = (e.clientY / H - 0.5) * -6;
-    if (!parallaxActive) {
-      parallaxActive = true;
-      animId = requestAnimationFrame(parallaxLoop);
-    }
-  }
-
-  function parallaxLoop() {
-    curOX += (targetOX - curOX) * 0.08;
-    curOY += (targetOY - curOY) * 0.08;
-    canvas!.style.transform = `translate(${curOX}px, ${curOY}px)`;
-    if (Math.abs(targetOX - curOX) > 0.01 || Math.abs(targetOY - curOY) > 0.01) {
-      animId = requestAnimationFrame(parallaxLoop);
-    } else {
-      parallaxActive = false;
-    }
-  }
-
   // ─── Theme observer ───
   const observer = new MutationObserver(() => {
     palette = getCurrentPalette();
@@ -531,13 +563,10 @@ export function initWoodGrainBackground() {
 
   // ─── Init ───
   window.addEventListener('resize', onResize);
-  window.addEventListener('mousemove', onMouseMove, { passive: true });
   resize();
 
   return () => {
-    cancelAnimationFrame(animId);
     observer.disconnect();
     window.removeEventListener('resize', onResize);
-    window.removeEventListener('mousemove', onMouseMove);
   };
 }

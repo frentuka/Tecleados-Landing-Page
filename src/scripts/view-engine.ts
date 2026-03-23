@@ -204,9 +204,14 @@ class ViewEngine {
 
   private resetEntrance(view: HTMLElement) {
     view.querySelectorAll<HTMLElement>('[data-enter]').forEach(el => {
+      el.classList.remove('enter-active');
       el.style.transition = '';
       el.style.opacity = '';
       el.style.transform = '';
+      el.style.animation = '';
+      el.style.filter = '';
+      el.style.clipPath = '';
+      el.style.animationDelay = '';
     });
   }
 
@@ -215,6 +220,9 @@ class ViewEngine {
       view.querySelectorAll<HTMLElement>('[data-enter]').forEach(el => {
         el.style.opacity = '1';
         el.style.transform = 'none';
+        el.style.animation = 'none';
+        el.style.filter = 'none';
+        el.style.clipPath = 'none';
       });
       return;
     }
@@ -222,9 +230,15 @@ class ViewEngine {
     const elements = view.querySelectorAll<HTMLElement>('[data-enter]');
     elements.forEach((el, i) => {
       const timer = setTimeout(() => {
-        el.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
+        const animName = el.dataset.anim;
+        const duration = el.dataset.animDuration || '0.6s';
+        if (animName) {
+          // Element has a specific named animation — apply inline
+          el.style.animation = `${animName} ${duration} ease both`;
+        } else {
+          // Fall back to per-view CSS class animation
+          el.classList.add('enter-active');
+        }
       }, 80 + i * 60);
       this.entranceTimers.push(timer);
     });

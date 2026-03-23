@@ -24,7 +24,7 @@ const woodColors: Record<string, string> = {
   <!-- Content -->
   <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
     <div class="mx-auto w-full max-w-4xl">
-      <div data-enter class="mb-6 text-center lg:mb-8">
+      <div data-enter data-anim="tape-header" data-anim-duration="0.55s" class="mb-6 text-center lg:mb-8">
         <p class="t-text-muted mb-2 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em]">
           Nuestros teclados
         </p>
@@ -33,7 +33,7 @@ const woodColors: Record<string, string> = {
         </h2>
       </div>
 
-      <div data-enter class="relative">
+      <div data-enter data-anim="tape-carousel" data-anim-duration="0.65s" class="relative">
         <div id="product-carousel">
           {products.map((product, i) => (
             <div class={`product-slide ${i === 0 ? 'product-slide--active' : ''}`} data-slide={i}>
@@ -96,7 +96,7 @@ const woodColors: Record<string, string> = {
         <button id="next-product" class="carousel-arrow absolute -right-5 top-1/2 hidden -translate-y-1/2 md:flex" aria-label="Producto siguiente">›</button>
       </div>
 
-      <div data-enter class="mt-6 flex items-center justify-center gap-2">
+      <div data-enter data-anim="dots-align" data-anim-duration="0.5s" class="mt-6 flex items-center justify-center gap-2">
         {products.map((_, i) => (
           <button class={`carousel-dot ${i === 0 ? 'carousel-dot--active' : ''}`} data-dot={i} aria-label={`Ver producto ${i + 1}`}></button>
         ))}

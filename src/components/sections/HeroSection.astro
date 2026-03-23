@@ -9,7 +9,7 @@
   <!-- Content -->
   <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
     <!-- Isometric Cube -->
-    <div data-enter>
+    <div data-enter data-anim="spring-pop" data-anim-duration="0.75s">
       <svg viewBox="0 0 200 200" class="h-32 w-32 drop-shadow-2xl lg:h-44 lg:w-44" xmlns="http://www.w3.org/2000/svg">
         <polygon points="100,100 30,65 30,135 100,170" fill="var(--color-digital-500)" opacity="0.85"/>
         <polygon points="100,100 30,65 30,135 100,170" fill="url(#pixelPatternDigital)" opacity="0.15"/>
@@ -39,22 +39,22 @@
       </svg>
     </div>
 
-    <h1 data-enter class="mt-6 text-[length:var(--text-hero)] font-semibold leading-none tracking-tight lg:mt-8">
+    <h1 data-enter data-anim="hero-title" data-anim-duration="0.6s" class="mt-6 text-[length:var(--text-hero)] font-semibold leading-none tracking-tight lg:mt-8">
       Tecleados
     </h1>
 
-    <p data-enter class="t-text-2 mt-3 max-w-lg text-[length:var(--text-body)] font-light leading-relaxed lg:mt-4">
+    <p data-enter data-anim="glitch-slide" data-anim-duration="0.55s" class="t-text-2 mt-3 max-w-lg text-[length:var(--text-body)] font-light leading-relaxed lg:mt-4">
       Teclados mecánicos artesanales que fusionan lo digital, lo natural y lo humano.
     </p>
 
-    <div data-enter class="mt-6 flex items-center gap-2 lg:mt-8">
+    <div data-enter data-anim="glitch-slide" data-anim-duration="0.5s" class="mt-6 flex items-center gap-2 lg:mt-8">
       <span class="font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-500">$</span>
       <p id="typewriter" class="t-text-muted font-[var(--font-mono)] text-[length:var(--text-mono-sm)]"
         data-text="Crea algo que valga la pena estar vivo e interactúa con ello que te hace ser."></p>
       <span class="inline-block h-4 w-[2px] bg-digital-500" style="animation: cursorBlink 1s infinite;"></span>
     </div>
 
-    <div data-enter class="t-text-dim mt-8 flex items-center gap-3 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.15em] lg:mt-10">
+    <div data-enter data-anim="hint-pop" data-anim-duration="0.55s" class="t-text-dim mt-8 flex items-center gap-3 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.15em] lg:mt-10">
       <span>←  →</span>
       <span class="h-3 w-px" style="background-color: var(--t-border-solid)"></span>
       <span>scroll</span>
