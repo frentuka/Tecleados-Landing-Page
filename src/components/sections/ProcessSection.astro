@@ -2,72 +2,103 @@
 import { processSteps } from '../../data/process-steps';
 ---
 
-<section id="proceso" class="relative bg-ivory-100 py-[length:var(--space-section)]">
-  <!-- Subtle grid background -->
+<section class="view view--hidden" id="proceso">
+  <!-- Decorative grid -->
   <div class="pointer-events-none absolute inset-0 opacity-[0.025]" aria-hidden="true"
     style="background-image: linear-gradient(var(--color-sage-500) 1px, transparent 1px), linear-gradient(90deg, var(--color-sage-500) 1px, transparent 1px); background-size: 40px 40px;">
   </div>
 
-  <div class="relative mx-auto max-w-7xl px-6 lg:px-10">
-    <!-- Section Header -->
-    <div class="mb-16 text-center lg:mb-20" data-animate="fade-up">
-      <span class="dev-annotation mb-2">// section: process</span>
-      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-sage-500">
-        El proceso
-      </p>
-      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-charcoal-600">
-        De la madera a tus manos
-      </h2>
-    </div>
-
-    <!-- Timeline -->
-    <div class="relative">
-      <!-- Vertical line -->
-      <div class="absolute left-8 top-0 bottom-0 hidden w-px lg:left-1/2 lg:block" data-animate="draw-line">
-        <svg class="h-full w-full" preserveAspectRatio="none">
-          <line x1="0.5" y1="0" x2="0.5" y2="100%" stroke="var(--color-sage-300)" stroke-width="1"/>
-        </svg>
+  <!-- Content -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
+    <div class="mx-auto w-full max-w-4xl">
+      <div data-enter class="mb-8 text-center lg:mb-10">
+        <p class="t-text-muted mb-2 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em]">
+          El proceso
+        </p>
+        <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight">
+          De la madera a tus manos
+        </h2>
       </div>
 
-      <!-- Steps -->
-      <div class="space-y-16 lg:space-y-24">
-        {processSteps.map((step, index) => (
-          <div class={`relative grid items-center gap-8 lg:grid-cols-2 lg:gap-16 ${index % 2 === 1 ? 'lg:direction-rtl' : ''}`} data-animate="fade-up">
-            <!-- Step Number Node (visible on desktop) -->
-            <div class="pointer-events-none absolute left-1/2 top-0 z-10 hidden -translate-x-1/2 lg:block">
-              <div class="flex h-12 w-12 items-center justify-center rounded-full border-2 border-natural-500 bg-ivory-100">
-                <span class="font-[var(--font-mono)] text-sm font-semibold text-natural-600">{step.number}</span>
-              </div>
-            </div>
+      <div data-enter class="mb-8 flex items-center justify-center gap-1 sm:gap-2 lg:gap-3">
+        {processSteps.map((step, i) => (
+          <>
+            <button
+              class={`step-node ${i === 0 ? 'step-node--active' : ''}`}
+              data-step-btn={i}
+              aria-label={`Paso ${step.number}: ${step.title}`}
+            >
+              {step.number}
+            </button>
+            {i < processSteps.length - 1 && (
+              <div class="step-connector"></div>
+            )}
+          </>
+        ))}
+      </div>
 
-            <!-- Image Side -->
-            <div class={`${index % 2 === 1 ? 'lg:order-2' : ''}`}>
-              <div class="overflow-hidden rounded-xl bg-charcoal-200 aspect-[3/2]">
-                <div class="flex h-full items-center justify-center bg-gradient-to-br from-natural-800/20 to-charcoal-600/30">
-                  <div class="text-center">
-                    <span class="font-[var(--font-mono)] text-6xl font-bold text-natural-500/20">{step.number}</span>
-                    <p class="mt-2 font-[var(--font-mono)] text-xs text-sage-400/50">// fotografía próximamente</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Text Side -->
-            <div class={`${index % 2 === 1 ? 'lg:order-1 lg:text-right' : ''}`}>
-              <!-- Mobile step number -->
-              <span class="mb-3 inline-block font-[var(--font-mono)] text-4xl font-bold text-natural-500/30 lg:hidden">
-                {step.number}
-              </span>
-              <h3 class="mb-3 text-[length:var(--text-h3)] font-semibold text-charcoal-600">
-                {step.title}
-              </h3>
-              <p class="text-[length:var(--text-body)] font-light leading-relaxed text-charcoal-300">
-                {step.description}
-              </p>
-            </div>
+      <div data-enter class="mx-auto max-w-2xl text-center">
+        {processSteps.map((step, i) => (
+          <div class={`step-detail ${i === 0 ? 'step-detail--active' : ''}`} data-step-detail={i}>
+            <h3 class="mb-3 text-[length:var(--text-h2)] font-semibold">
+              {step.title}
+            </h3>
+            <p class="t-text-2 text-[length:var(--text-body)] font-light leading-relaxed">
+              {step.description}
+            </p>
           </div>
         ))}
       </div>
     </div>
   </div>
+
+  <span class="dev-annotation absolute bottom-16 left-4">// view: proceso | steps: {processSteps.length}</span>
 </section>
+
+<script>
+  const stepBtns = document.querySelectorAll<HTMLElement>('[data-step-btn]');
+  const stepDetails = document.querySelectorAll<HTMLElement>('[data-step-detail]');
+
+  let currentStep = 0;
+
+  function goToStep(index: number) {
+    if (index < 0 || index >= stepBtns.length || index === currentStep) return;
+    stepBtns.forEach(b => b.classList.remove('step-node--active'));
+    stepDetails.forEach(d => d.classList.remove('step-detail--active'));
+    stepBtns[index].classList.add('step-node--active');
+    stepDetails[index].classList.add('step-detail--active');
+    currentStep = index;
+  }
+
+  stepBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => goToStep(i));
+  });
+
+  // Keyboard (up/down arrows dispatched by view engine)
+  const section = document.getElementById('proceso');
+  section?.addEventListener('view:internal-next', () => {
+    goToStep(Math.min(currentStep + 1, stepBtns.length - 1));
+  });
+  section?.addEventListener('view:internal-prev', () => {
+    goToStep(Math.max(currentStep - 1, 0));
+  });
+
+  // Horizontal swipe
+  const proceso = document.getElementById('proceso');
+  if (proceso) {
+    let startX = 0;
+    let startY = 0;
+    proceso.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    proceso.addEventListener('touchend', (e) => {
+      const dx = startX - e.changedTouches[0].clientX;
+      const dy = startY - e.changedTouches[0].clientY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) goToStep(Math.min(currentStep + 1, stepBtns.length - 1));
+        else goToStep(Math.max(currentStep - 1, 0));
+      }
+    }, { passive: true });
+  }
+</script>

@@ -1,0 +1,19 @@
+---
+/**
+ * WoodGrainBackground — Full-viewport interactive canvas background.
+ * Fixed behind all content, shared across all views.
+ */
+---
+
+<canvas id="wood-grain-bg" aria-hidden="true"></canvas>
+
+<style>
+  #wood-grain-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
+  }
+</style>

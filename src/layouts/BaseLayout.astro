@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import WoodGrainBackground from '../components/WoodGrainBackground.astro';
 
 interface Props {
   title?: string;
@@ -16,7 +17,7 @@ const {
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="description" content={description} />
     <title>{title}</title>
 
@@ -32,12 +33,20 @@ const {
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Apply saved theme before render to prevent flash -->
+    <script is:inline>
+      (function(){var t=localStorage.getItem('tecleados-theme')||'dark';document.documentElement.setAttribute('data-theme',t)})();
+    </script>
   </head>
-  <body class="overflow-x-hidden">
+  <body>
+    <WoodGrainBackground />
     <slot />
     <script>
-      import { initAnimations } from '../scripts/gsap-init';
-      initAnimations();
+      import { initViewEngine } from '../scripts/view-engine';
+      import { initWoodGrainBackground } from '../scripts/wood-grain-bg';
+      initViewEngine();
+      initWoodGrainBackground();
     </script>
   </body>
 </html>

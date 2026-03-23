@@ -1,93 +1,104 @@
 ---
+import { testimonials } from '../../data/testimonials';
+const year = new Date().getFullYear();
 ---
 
-<section id="contacto" class="relative overflow-hidden bg-charcoal-600 py-[length:var(--space-section)]">
-  <!-- Morphing gradient callback (lower opacity) -->
-  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-    <div class="morphing-gradient-orb--cta absolute right-[20%] top-[30%] h-[300px] w-[300px] rounded-full opacity-[0.08] blur-[80px]"></div>
-    <div class="morphing-gradient-orb--cta-2 absolute left-[30%] bottom-[20%] h-[250px] w-[250px] rounded-full opacity-[0.06] blur-[80px]"></div>
-  </div>
+<section class="view view--hidden" id="contacto">
+  <!-- Content -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center lg:px-10">
+    <div class="mx-auto w-full max-w-2xl">
+      <!-- Floating cube icon -->
+      <div data-enter class="mb-5">
+        <svg viewBox="0 0 200 200" class="mx-auto h-14 w-14 opacity-60" style="animation: float 4s ease-in-out infinite;">
+          <polygon points="100,100 30,65 30,135 100,170" fill="var(--color-digital-500)" opacity="0.7"/>
+          <polygon points="100,100 170,65 170,135 100,170" fill="var(--color-human-500)" opacity="0.7"/>
+          <polygon points="100,30 30,65 100,100 170,65" fill="var(--color-natural-500)" opacity="0.6"/>
+          <g transform="translate(100, 65)">
+            <polygon points="0,-20 -18,-10 0,0 18,-10" fill="var(--color-ivory-200)" opacity="0.8"/>
+            <polygon points="0,-20 -14,-12 0,-4 14,-12" fill="var(--color-ivory-100)" opacity="0.9"/>
+          </g>
+        </svg>
+      </div>
 
-  <div class="relative mx-auto max-w-3xl px-6 text-center lg:px-10">
-    <!-- Small Cube Logo -->
-    <div class="mb-10 inline-block" data-animate="scale-in">
-      <svg viewBox="0 0 200 200" class="h-20 w-20 mx-auto opacity-60" style="animation: float 4s ease-in-out infinite;">
-        <polygon points="100,100 30,65 30,135 100,170" fill="var(--color-digital-500)" opacity="0.7"/>
-        <polygon points="100,100 170,65 170,135 100,170" fill="var(--color-human-500)" opacity="0.7"/>
-        <polygon points="100,30 30,65 100,100 170,65" fill="var(--color-natural-500)" opacity="0.6"/>
-        <g transform="translate(100, 65)">
-          <polygon points="0,-20 -18,-10 0,0 18,-10" fill="var(--color-ivory-200)" opacity="0.8"/>
-          <polygon points="0,-20 -14,-12 0,-4 14,-12" fill="var(--color-ivory-100)" opacity="0.9"/>
-        </g>
-      </svg>
-    </div>
+      <!-- CTA Heading -->
+      <h2 data-enter class="mb-3 text-[length:var(--text-h1)] font-semibold leading-tight">
+        Tu próximo teclado nace de un árbol
+      </h2>
 
-    <!-- CTA Heading -->
-    <h2 class="mb-6 text-[length:var(--text-h1)] font-semibold leading-tight text-ivory-100" data-animate="fade-up">
-      Tu próximo teclado nace de un árbol
-    </h2>
+      <p data-enter class="t-text-2 mx-auto mb-6 max-w-xl text-[length:var(--text-body)] font-light leading-relaxed">
+        Dejanos tu email y te avisamos cuando lancemos nuestra primera edición.
+      </p>
 
-    <p class="mb-10 text-[length:var(--text-body)] font-light leading-relaxed text-sage-300 max-w-xl mx-auto" data-animate="fade-up">
-      Dejanos tu email y te avisamos cuando lancemos nuestra primera edición.
-      Cada unidad es limitada, cada pieza es irrepetible.
-    </p>
-
-    <!-- Email Form -->
-    <form id="contact-form" class="mx-auto flex max-w-md flex-col gap-3 sm:flex-row" data-animate="fade-up">
-      <div class="relative flex-1">
+      <!-- Email Form -->
+      <form data-enter id="contact-form" class="mx-auto flex max-w-md flex-col gap-2 sm:flex-row">
         <input
           type="email"
           id="email-input"
           placeholder="tu@email.com"
           required
-          class="w-full rounded-xl border border-charcoal-400 bg-charcoal-500/50 px-5 py-3.5 font-[var(--font-mono)] text-sm text-ivory-200 placeholder-sage-500 outline-none transition-all duration-200 focus:border-digital-500 focus:ring-1 focus:ring-digital-500/30"
+          class="t-border w-full flex-1 rounded-xl border bg-[var(--t-bg-elevated)] px-4 py-3 font-[var(--font-mono)] text-sm text-[var(--t-text)] placeholder-[var(--t-text-dim)] outline-none transition-all duration-200 focus:border-digital-500 focus:ring-1 focus:ring-digital-500/30"
         />
+        <button
+          type="submit"
+          class="rounded-xl bg-digital-500 px-6 py-3 text-sm font-semibold text-charcoal-900 transition-all duration-200 hover:bg-digital-400 active:scale-[0.98]"
+        >
+          Avisame
+        </button>
+      </form>
+
+      <!-- Success Message -->
+      <div id="form-success" class="mt-4 hidden">
+        <p class="font-[var(--font-mono)] text-sm text-natural-400">
+          ✓ ¡Listo! Te avisaremos cuando haya novedades.
+        </p>
       </div>
-      <button
-        type="submit"
-        class="rounded-xl bg-digital-500 px-7 py-3.5 text-sm font-semibold text-charcoal-900 transition-all duration-200 hover:bg-digital-400 active:scale-[0.98]"
-      >
-        Avisame
-      </button>
-    </form>
 
-    <!-- Success Message (hidden by default) -->
-    <div id="form-success" class="hidden mt-6">
-      <p class="font-[var(--font-mono)] text-sm text-natural-400">
-        ✓ ¡Listo! Te avisaremos cuando haya novedades.
-      </p>
-    </div>
+      <!-- Testimonial (single, rotating) -->
+      <div data-enter class="t-border mt-6 border-t pt-5">
+        <div id="testimonial-display">
+          <blockquote class="t-text-2 text-sm italic leading-relaxed">
+            "{testimonials[0].quote}"
+          </blockquote>
+          <p class="t-text-muted mt-2 text-xs">
+            <span id="testimonial-avatar">{testimonials[0].avatar}</span>
+            <span id="testimonial-name"> {testimonials[0].name}</span>,
+            <span id="testimonial-role">{testimonials[0].role}</span>
+          </p>
+        </div>
+      </div>
 
-    <!-- Contact Link -->
-    <div class="mt-12" data-animate="fade-in">
-      <p class="text-sm text-sage-400 mb-2">¿Querés hablar directamente?</p>
-      <a href="mailto:hola@tecleados.com" class="font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-400 transition-colors hover:text-digital-300">
+      <!-- Social links -->
+      <div data-enter class="mt-5 flex flex-wrap items-center justify-center gap-3">
+        {['Discord', 'Instagram', 'Reddit', 'GitHub'].map((platform) => (
+          <a
+            href="#"
+            class="t-border rounded-lg border px-3 py-1.5 font-[var(--font-mono)] text-xs text-[var(--t-text-muted)] transition-all duration-200 hover:border-digital-500/30 hover:text-digital-400"
+          >
+            {platform}
+          </a>
+        ))}
+      </div>
+
+      <!-- Contact email -->
+      <a data-enter href="mailto:hola@tecleados.com" class="mt-3 inline-block font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-400 transition-colors hover:text-digital-300">
         hola@tecleados.com
       </a>
-    </div>
 
-    <!-- Dev annotation -->
-    <span class="dev-annotation mt-8">// section: cta | form: email-capture</span>
+      <!-- Version / Copyright -->
+      <p data-enter class="t-text-dim mt-4 font-[var(--font-mono)] text-[10px]">
+        v1.0.0 // hecho a mano en argentina // &copy; {year} Tecleados
+      </p>
+    </div>
   </div>
+
+  <span class="dev-annotation absolute bottom-16 left-4">// view: contacto | form: email-capture</span>
 </section>
 
-<style>
-  .morphing-gradient-orb--cta {
-    background: radial-gradient(circle, var(--color-digital-500), transparent 70%);
-    animation: morphGradient1 30s ease-in-out infinite;
-    mix-blend-mode: soft-light;
-  }
-  .morphing-gradient-orb--cta-2 {
-    background: radial-gradient(circle, var(--color-natural-500), transparent 70%);
-    animation: morphGradient2 35s ease-in-out infinite;
-    mix-blend-mode: soft-light;
-  }
-</style>
 
 <script>
+  // Form submission
   const form = document.getElementById('contact-form');
   const success = document.getElementById('form-success');
-
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = (document.getElementById('email-input') as HTMLInputElement)?.value;
@@ -96,4 +107,29 @@
       success?.classList.remove('hidden');
     }
   });
+
+  // Rotate testimonials
+  const testimonials = [
+    { name: 'Martín R.', role: 'Desarrollador Full-Stack', quote: 'No es solo un teclado, es una pieza de arte que uso todos los días. El sonido de las teclas sobre la madera es algo que no sabía que necesitaba.', avatar: '🧑‍💻' },
+    { name: 'Lucía M.', role: 'Diseñadora UX', quote: 'La atención al detalle es increíble. Cada vez que alguien ve mi teclado en una call, me preguntan de dónde es. Orgullosa de que sea argentino.', avatar: '👩‍🎨' },
+    { name: 'Santiago K.', role: 'Gamer & Streamer', quote: 'Pensé que un teclado de madera iba a ser solo estético, pero la calidad del tipeo y la respuesta de los switches me sorprendieron totalmente.', avatar: '🎮' },
+    { name: 'Valentina S.', role: 'Escritora', quote: 'Escribir en un Tecleados es como volver a descubrir el placer de tipear. Tiene algo orgánico, cálido, que me conecta con lo que escribo.', avatar: '✍️' },
+  ];
+
+  let currentTestimonial = 0;
+  const display = document.getElementById('testimonial-display');
+  if (display) {
+    setInterval(() => {
+      currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+      const t = testimonials[currentTestimonial];
+      const quote = display.querySelector('blockquote');
+      const avatar = document.getElementById('testimonial-avatar');
+      const name = document.getElementById('testimonial-name');
+      const role = document.getElementById('testimonial-role');
+      if (quote) quote.textContent = `"${t.quote}"`;
+      if (avatar) avatar.textContent = t.avatar;
+      if (name) name.textContent = ` ${t.name}`;
+      if (role) role.textContent = t.role;
+    }, 6000);
+  }
 </script>

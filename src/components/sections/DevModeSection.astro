@@ -1,85 +1,108 @@
 ---
+const groups = [
+  {
+    pillar: 'Digital',
+    borderColor: 'border-digital-500/20',
+    labelColor: 'text-digital-400',
+    accentBg: 'bg-digital-500/5',
+    dotColor: 'bg-digital-500',
+    specs: [
+      { label: 'Firmware',       value: 'QMK / VIA' },
+      { label: 'Layout',         value: 'ISO-ES & ANSI' },
+      { label: 'Conectividad',   value: 'USB-C · Bluetooth 5.0' },
+      { label: 'N-Key Rollover', value: 'Sí, completo' },
+      { label: 'RGB',            value: 'Per-key, 16M colores' },
+    ],
+  },
+  {
+    pillar: 'Natural',
+    borderColor: 'border-natural-500/20',
+    labelColor: 'text-natural-400',
+    accentBg: 'bg-natural-500/5',
+    dotColor: 'bg-natural-500',
+    specs: [
+      { label: 'Material',    value: 'Madera nativa argentina' },
+      { label: 'Especies',    value: 'Lenga · Algarrobo · Quebracho · Guatambú' },
+      { label: 'Acabado',     value: 'Aceitado a mano' },
+      { label: 'Peso',        value: '450 g – 650 g' },
+      { label: 'Sustentable', value: 'Productores certificados' },
+    ],
+  },
+  {
+    pillar: 'Humano',
+    borderColor: 'border-human-500/20',
+    labelColor: 'text-human-400',
+    accentBg: 'bg-human-500/5',
+    dotColor: 'bg-human-500',
+    specs: [
+      { label: 'Switches', value: 'Cherry MX · Gateron · Kailh' },
+      { label: 'Keycaps',  value: 'PBT Double-Shot' },
+      { label: 'Hotswap',  value: 'Sí, sin soldar' },
+      { label: 'Origen',   value: 'Buenos Aires, Argentina' },
+      { label: 'Serie',    value: 'Edición limitada, numerada' },
+    ],
+  },
+];
 ---
 
-<section id="specs" class="relative overflow-hidden bg-charcoal-800 py-[length:var(--space-section)]">
-  <!-- Scanline overlay -->
-  <div class="pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true"
-    style="background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--color-digital-500) 2px, var(--color-digital-500) 3px); background-size: 100% 4px;">
+<section class="view view--hidden" id="specs">
+  <!-- Decorative grid -->
+  <div class="pointer-events-none absolute inset-0 opacity-[0.025]" aria-hidden="true"
+    style="background-image: linear-gradient(var(--color-sage-400) 1px, transparent 1px), linear-gradient(90deg, var(--color-sage-400) 1px, transparent 1px); background-size: 40px 40px;">
   </div>
 
-  <div class="mx-auto max-w-4xl px-6 lg:px-10">
-    <!-- Section Header -->
-    <div class="mb-12 lg:mb-16" data-animate="fade-up">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="h-3 w-3 rounded-full bg-natural-500"></div>
-        <div class="h-3 w-3 rounded-full bg-human-500"></div>
-        <div class="h-3 w-3 rounded-full bg-digital-500"></div>
+  <!-- Content -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
+    <div class="mx-auto w-full max-w-6xl">
+      <!-- Header -->
+      <div data-enter class="mb-3 sm:mb-6 lg:mb-8">
+        <p class="t-text-muted mb-1 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] sm:mb-2">
+          Para los que quieren saber más
+        </p>
+        <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight">
+          Especificaciones
+        </h2>
       </div>
-      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-digital-500">
-        &gt; para los que quieren saber más
+
+      <!-- Spec Groups -->
+      <div data-enter class="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
+        {groups.map((group) => (
+          <div class:list={[
+            'rounded-lg border p-2 sm:rounded-xl sm:p-5 lg:p-6',
+            group.borderColor,
+            group.accentBg,
+          ]}>
+            <!-- Group header -->
+            <div class="mb-2 flex items-center gap-1 sm:mb-4 sm:gap-2">
+              <span class:list={['h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2', group.dotColor]}></span>
+              <span class:list={['font-[var(--font-mono)] text-[9px] uppercase tracking-[0.1em] sm:text-xs sm:tracking-[0.2em]', group.labelColor]}>
+                {group.pillar}
+              </span>
+            </div>
+
+            <!-- Spec rows -->
+            <ul class="space-y-1.5 sm:space-y-3">
+              {group.specs.map((spec) => (
+                <li class="t-border flex flex-col gap-0 border-b pb-1.5 last:border-0 last:pb-0 sm:gap-0.5 sm:pb-3">
+                  <span class:list={['font-[var(--font-mono)] text-[8px] uppercase tracking-[0.1em] sm:text-[10px] sm:tracking-[0.15em]', group.labelColor]}>
+                    {spec.label}
+                  </span>
+                  <span class="t-text-2 text-[10px] font-light leading-tight sm:text-[length:var(--text-small)] sm:leading-snug">
+                    {spec.value}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <!-- Bottom note -->
+      <p data-enter class="t-text-muted mt-3 text-center font-[var(--font-mono)] text-[9px] sm:mt-5 sm:text-[length:var(--text-mono-sm)]">
+        // specs pueden variar por modelo
       </p>
-      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-ivory-100">
-        Especificaciones
-      </h2>
-    </div>
-
-    <!-- Code Block -->
-    <div class="relative overflow-hidden rounded-xl border border-charcoal-500/50 bg-charcoal-900" data-animate="fade-up">
-      <!-- Title Bar -->
-      <div class="flex items-center gap-2 border-b border-charcoal-600 px-4 py-3">
-        <div class="h-2.5 w-2.5 rounded-full bg-human-500/60"></div>
-        <div class="h-2.5 w-2.5 rounded-full bg-human-400/40"></div>
-        <div class="h-2.5 w-2.5 rounded-full bg-natural-500/40"></div>
-        <span class="ml-3 font-[var(--font-mono)] text-[11px] text-sage-500">tecleados.config.ts</span>
-      </div>
-
-      <!-- Code Content -->
-      <div class="overflow-x-auto p-6 lg:p-8">
-        <pre class="font-[var(--font-mono)] text-[length:var(--text-mono-sm)] leading-7"><code><span class="text-sage-500">// Configuración base de un teclado Tecleados</span>
-<span class="text-digital-400">export</span> <span class="text-digital-400">const</span> <span class="text-ivory-200">keyboard</span> <span class="text-sage-400">=</span> <span class="text-sage-400">&#123;</span>
-
-  <span class="text-natural-400">layout</span><span class="text-sage-400">:</span>     <span class="text-human-300">"ISO-ES"</span> <span class="text-sage-500">| "ANSI"</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">switches</span><span class="text-sage-400">:</span>   <span class="text-human-300">"Cherry MX"</span> <span class="text-sage-500">| "Gateron" | "Kailh"</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">keycaps</span><span class="text-sage-400">:</span>    <span class="text-human-300">"PBT Double-Shot"</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">hotswap</span><span class="text-sage-400">:</span>    <span class="text-digital-300">true</span><span class="text-sage-400">,</span>
-
-  <span class="text-natural-400">case</span><span class="text-sage-400">:</span> <span class="text-sage-400">&#123;</span>
-    <span class="text-natural-400">material</span><span class="text-sage-400">:</span>    <span class="text-human-300">"Madera Nativa Argentina"</span><span class="text-sage-400">,</span>
-    <span class="text-natural-400">finish</span><span class="text-sage-400">:</span>      <span class="text-human-300">"Aceitado a Mano"</span><span class="text-sage-400">,</span>
-    <span class="text-natural-400">species</span><span class="text-sage-400">:</span>     <span class="text-sage-400">[</span><span class="text-human-300">"Lenga"</span><span class="text-sage-400">,</span> <span class="text-human-300">"Algarrobo"</span><span class="text-sage-400">,</span> <span class="text-human-300">"Quebracho"</span><span class="text-sage-400">,</span> <span class="text-human-300">"Guatambú"</span><span class="text-sage-400">],</span>
-    <span class="text-natural-400">weight</span><span class="text-sage-400">:</span>      <span class="text-human-300">"450g - 650g"</span><span class="text-sage-400">,</span>
-  <span class="text-sage-400">&#125;,</span>
-
-  <span class="text-natural-400">connectivity</span><span class="text-sage-400">:</span> <span class="text-human-300">"USB-C"</span> <span class="text-sage-500">| "Bluetooth 5.0"</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">firmware</span><span class="text-sage-400">:</span>     <span class="text-human-300">"QMK / VIA Compatible"</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">rgb</span><span class="text-sage-400">:</span>          <span class="text-digital-300">true</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">nkro</span><span class="text-sage-400">:</span>         <span class="text-digital-300">true</span><span class="text-sage-400">,</span>
-
-  <span class="text-sage-500">// Cada teclado es único</span>
-  <span class="text-natural-400">serialNumber</span><span class="text-sage-400">:</span> <span class="text-human-300">`TC-$&#123;Date.now()&#125;`</span><span class="text-sage-400">,</span>
-  <span class="text-natural-400">madeIn</span><span class="text-sage-400">:</span>       <span class="text-human-300">"Buenos Aires, Argentina"</span> <span class="text-digital-500">🇦🇷</span><span class="text-sage-400">,</span>
-
-<span class="text-sage-400">&#125;</span> <span class="text-digital-400">satisfies</span> <span class="text-digital-300">Tecleados.Config</span><span class="text-sage-400">;</span></code></pre>
-      </div>
-    </div>
-
-    <!-- Features Grid Below Code -->
-    <div class="mt-12 grid gap-6 sm:grid-cols-3" data-animate="stagger">
-      <div class="rounded-lg border border-charcoal-600 bg-charcoal-700/50 p-5">
-        <p class="mb-1 font-[var(--font-mono)] text-xs text-digital-400">firmware</p>
-        <p class="text-sm font-medium text-ivory-200">QMK + VIA</p>
-        <p class="mt-1 text-xs text-sage-400">Remapeo total de teclas. Open source.</p>
-      </div>
-      <div class="rounded-lg border border-charcoal-600 bg-charcoal-700/50 p-5">
-        <p class="mb-1 font-[var(--font-mono)] text-xs text-natural-400">material</p>
-        <p class="text-sm font-medium text-ivory-200">Madera Nativa</p>
-        <p class="mt-1 text-xs text-sage-400">Sustentable. Cada pieza irrepetible.</p>
-      </div>
-      <div class="rounded-lg border border-charcoal-600 bg-charcoal-700/50 p-5">
-        <p class="mb-1 font-[var(--font-mono)] text-xs text-human-400">artesanía</p>
-        <p class="text-sm font-medium text-ivory-200">Hecho a Mano</p>
-        <p class="mt-1 text-xs text-sage-400">Acabado manual. Control de calidad individual.</p>
-      </div>
     </div>
   </div>
+
+  <span class="dev-annotation absolute bottom-16 left-4">// view: specs | groups: 3</span>
 </section>

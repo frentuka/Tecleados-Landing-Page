@@ -2,58 +2,62 @@
 import { woodSpecies } from '../../data/wood-species';
 ---
 
-<section id="maderas" class="relative overflow-hidden bg-ivory-200 py-[length:var(--space-section)]">
-  <div class="mx-auto max-w-7xl px-6 lg:px-10">
-    <!-- Section Header -->
-    <div class="mb-16 text-center lg:mb-20" data-animate="fade-up">
-      <span class="dev-annotation mb-2">// section: wood-gallery</span>
-      <p class="mb-3 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] text-sage-500">
-        Maderas argentinas
-      </p>
-      <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight text-charcoal-600">
-        La materia prima
-      </h2>
-    </div>
+<section class="view view--hidden" id="maderas">
+  <!-- Content -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
+    <div class="mx-auto w-full max-w-5xl">
+      <!-- Header -->
+      <div data-enter class="mb-4 text-center sm:mb-6 lg:mb-8">
+        <p class="t-text-muted mb-1 font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em] sm:mb-2">
+          Maderas argentinas
+        </p>
+        <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight">
+          La materia prima
+        </h2>
+      </div>
 
-    <!-- Masonry-like Grid -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-6" data-animate="stagger">
-      {woodSpecies.map((wood, i) => (
-        <div class={`group relative overflow-hidden rounded-xl ${i === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}>
-          <!-- Wood Color Block (placeholder for photo) -->
-          <div class={`${i === 0 ? 'aspect-square' : 'aspect-[4/3]'} relative overflow-hidden`}>
-            <div
-              class="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-              style={`background: linear-gradient(135deg, ${wood.color}ee, ${wood.color}88, ${wood.color}cc); `}
-            >
-              <!-- Wood grain texture simulation -->
-              <div class="absolute inset-0 opacity-30" style={`background-image: repeating-linear-gradient(${i * 30 + 10}deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px); `}></div>
-            </div>
+      <!-- Wood Grid -->
+      <div data-enter class="grid grid-cols-2 gap-2 md:grid-cols-4 sm:gap-3 lg:gap-4">
+        {woodSpecies.map((wood, i) => (
+          <div class="group relative overflow-hidden rounded-lg sm:rounded-xl">
+            <div class="aspect-square relative overflow-hidden sm:aspect-[3/4]">
+              <!-- Wood color background -->
+              <div
+                class="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                style={`background: linear-gradient(135deg, ${wood.color}ee, ${wood.color}88, ${wood.color}cc);`}
+              >
+                <!-- Wood grain texture -->
+                <div class="absolute inset-0 opacity-30"
+                  style={`background-image: repeating-linear-gradient(${i * 30 + 10}deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);`}>
+                </div>
+              </div>
 
-            <!-- Label Overlay -->
-            <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-charcoal-900/70 via-transparent p-5 lg:p-6">
-              <span class="mb-1 font-[var(--font-mono)] text-xs uppercase tracking-wider text-ivory-200/70">
-                {wood.origin}
-              </span>
-              <h3 class="text-xl font-semibold text-ivory-100 lg:text-2xl">
-                {wood.name}
-              </h3>
-              <p class="mt-1 font-[var(--font-mono)] text-[10px] italic text-ivory-300/50">
-                {wood.scientificName}
-              </p>
-              <p class="mt-2 text-sm font-light text-ivory-200/80 leading-relaxed">
-                {wood.description}
-              </p>
+              <!-- Label overlay -->
+              <div class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-charcoal-900/70 via-transparent p-2 sm:p-4">
+                <span class="font-[var(--font-mono)] text-[8px] uppercase tracking-wider text-ivory-200/70 sm:text-[10px]">
+                  {wood.origin}
+                </span>
+                <h3 class="text-sm font-semibold text-ivory-100 sm:text-lg lg:text-xl">
+                  {wood.name}
+                </h3>
+                <p class="mt-0.5 hidden font-[var(--font-mono)] text-[9px] italic text-ivory-300/50 sm:block">
+                  {wood.scientificName}
+                </p>
+                <p class="mt-0.5 text-[10px] font-light leading-snug text-ivory-200/80 sm:mt-1 sm:text-xs">
+                  {wood.description}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
 
-    <!-- Bottom Quote -->
-    <div class="mt-16 text-center" data-animate="fade-up">
-      <p class="text-[length:var(--text-h3)] font-light italic text-charcoal-300 max-w-2xl mx-auto">
+      <!-- Quote -->
+      <p data-enter class="t-text-2 mx-auto mt-3 max-w-xl text-center text-sm font-light italic sm:mt-6 sm:text-[length:var(--text-h3)] lg:mt-8">
         "Cada teclado lleva la historia de un árbol argentino."
       </p>
     </div>
   </div>
+
+  <span class="dev-annotation absolute bottom-16 left-4">// view: maderas | species: {woodSpecies.length}</span>
 </section>
