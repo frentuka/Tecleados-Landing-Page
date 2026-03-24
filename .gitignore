@@ -1,5 +1,6 @@
 node_modules/
 dist/
+stuff/
 .claude/
 .astro/
 .env
