@@ -34,9 +34,13 @@ const {
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Apply saved theme before render to prevent flash -->
+    <!-- Apply saved theme + bg color before render to prevent flash -->
     <script is:inline>
-      (function(){var t=localStorage.getItem('tecleados-theme')||'dark';document.documentElement.setAttribute('data-theme',t)})();
+      (function(){
+        var t=localStorage.getItem('tecleados-theme')||'dark';
+        document.documentElement.setAttribute('data-theme',t);
+        document.documentElement.style.backgroundColor=t==='light'?'rgb(220,205,183)':'rgb(22,14,7)';
+      })();
     </script>
   </head>
   <body>

@@ -1,20 +1,21 @@
 /**
- * Wood Grain Background — Realistic procedural wood texture
+ * Wood Grain Background — Procedural wood with realistic knots & veins
  *
- * Uses domain warping + asymmetric ring profiles to produce natural-looking
- * wood grain. Each page load generates a unique pattern.
+ * Inspired by "Procedural Texturing of Solid Wood with Knots"
+ * (Larsson, Ijiri, Yoshida et al., ACM Trans. Graph. 2022)
  *
- * Key techniques for realism:
- * - Domain warping (noise fed into noise) for organic flow
- * - Anisotropic distortion (stretched along grain direction)
- * - Asymmetric ring profile (wide earlywood, sharp latewood lines)
- * - Multiple knots with proper concentric ring integration
+ * Core techniques from the paper, adapted to 2D canvas:
+ * - Time-field scalar model: annual rings as isocurves of growth time
+ * - Smooth minimum (Quilez cubic): seamless stem↔knot ring transitions
+ * - Order-independent multi-knot merging via pairwise delta summation
+ * - Dead knots with butterfly distortion (smoothness inversion)
+ * - Potential-flow deflection for grain fiber bending around knots
+ * - Domain warping (FBM-fed noise) for organic, natural-looking flow
  *
- * Orientation: horizontal grain in landscape, vertical in portrait.
- * Theme-aware: dark stained wood / light bleached wood.
+ * Minimalist · Natural · Modern
  */
 
-// ─── Simplex Noise ───────────────────────────────────────────────────────────
+// ─── Simplex Noise ──────────────────────────────────────────────────────────
 
 const F2 = 0.5 * (Math.sqrt(3) - 1);
 const G2 = (3 - Math.sqrt(3)) / 6;
@@ -83,7 +84,6 @@ function simplex2(x: number, y: number): number {
   return 70 * (n0 + n1 + n2);
 }
 
-// FBM — smooth layered noise
 function fbm(x: number, y: number, octaves: number): number {
   let value = 0;
   let amp = 1;
@@ -98,45 +98,60 @@ function fbm(x: number, y: number, octaves: number): number {
   return value / max;
 }
 
-// ─── Color Palettes ──────────────────────────────────────────────────────────
+// ─── Smooth Minimum ─────────────────────────────────────────────────────────
+
+/**
+ * Cubic polynomial smooth min (Inigo Quilez).
+ * Returns a value ≤ min(a,b) that smoothly blends the two fields.
+ * k controls fillet radius; k=0 degenerates to hard min.
+ */
+function sminCubic(a: number, b: number, k: number): number {
+  if (k <= 0) return Math.min(a, b);
+  const h = Math.max(k - Math.abs(a - b), 0) / k;
+  return Math.min(a, b) - h * h * h * k / 6;
+}
+
+// ─── Color Palettes ─────────────────────────────────────────────────────────
 
 type RGB = [number, number, number];
 
 interface WoodPalette {
   bg: RGB;
-  // Earlywood (wide light bands) and latewood (narrow dark lines)
-  earlywood: RGB[];   // 2-3 colors to lerp between
-  latewood: RGB[];    // 2-3 colors for the dark grain lines
+  earlywood: RGB[];
+  latewood: RGB[];
+  ray: RGB; // medullary ray highlight
 }
 
-// Dark mode: dark walnut / rich chocolate brown
+// Dark mode: muted walnut — tones close together, no harsh dark lines
 const darkPalette: WoodPalette = {
-  bg: [16, 9, 4],
+  bg: [22, 14, 7],
   earlywood: [
-    [40, 24, 11],     // deep chocolate
-    [54, 33, 15],     // warm dark brown
-    [68, 43, 20],     // medium dark brown
+    [44, 30, 16],
+    [50, 34, 18],
+    [56, 38, 21],
   ],
   latewood: [
-    [10, 5, 2],       // espresso / near black
-    [19, 10, 5],      // very dark brown
-    [29, 16, 8],      // dark grain line
+    [32, 20, 10],
+    [36, 24, 12],
+    [40, 27, 14],
   ],
+  ray: [60, 42, 24],
 };
 
-// Light mode: Algarrobo blanco (Argentine carob) — warm honey with reddish grain
+// Light mode: pale ash — soft warm tones, barely-there grain
 const lightPalette: WoodPalette = {
-  bg: [218, 180, 128],
+  bg: [220, 205, 183],
   earlywood: [
-    [228, 192, 140],  // pale honey
-    [215, 176, 120],  // warm honey
-    [200, 158, 98],   // golden amber
+    [226, 212, 192],
+    [220, 206, 185],
+    [212, 197, 174],
   ],
   latewood: [
-    [108, 60, 20],    // deep reddish-brown grain line
-    [133, 80, 34],    // medium warm brown
-    [158, 104, 54],   // lighter brown line
+    [188, 170, 146],
+    [180, 162, 138],
+    [170, 152, 128],
   ],
+  ray: [232, 220, 202],
 };
 
 function lerpRGB(a: RGB, b: RGB, t: number): RGB {
@@ -155,35 +170,42 @@ function sampleGradient(colors: RGB[], t: number): RGB {
   return lerpRGB(colors[lo], colors[hi], idx - lo);
 }
 
-// ─── Knot ────────────────────────────────────────────────────────────────────
+// ─── Knot Types ─────────────────────────────────────────────────────────────
 
 interface Knot {
-  // Normalized position (0-1)
-  px: number;   // along primary axis
-  py: number;   // along secondary axis
-  // Radii (normalized) — elliptical knots
-  rx: number;   // along grain (wider)
-  ry: number;   // across grain (narrower)
-  strength: number;
-  ringTightness: number;
+  px: number;           // position along grain (0-1)
+  py: number;           // position across grain (0-1)
+  rx: number;           // elliptical radius along grain (wider)
+  ry: number;           // elliptical radius across grain (narrower)
+  strength: number;     // visual prominence (0.6-1.0)
+  ringCount: number;    // concentric ring cycles visible inside knot
+  isDead: boolean;      // alive knots intergrow; dead knots separate
+  deathTime: number;    // normalized time of death (0.1-0.5)
+  kSmooth: number;      // base smoothness for smin fillet
+  tilt: number;         // slight angular tilt of knot axis
 }
 
 function generateKnots(rng: () => number, count: number): Knot[] {
   const knots: Knot[] = [];
   for (let i = 0; i < count; i++) {
+    const isDead = rng() > 0.42;
     knots.push({
-      px: 0.05 + rng() * 0.9,
-      py: 0.08 + rng() * 0.84,
-      rx: 0.06 + rng() * 0.10,     // wider along grain
-      ry: 0.03 + rng() * 0.06,     // narrower across grain
-      strength: 0.5 + rng() * 0.5,
-      ringTightness: 15 + rng() * 25,
+      px: 0.15 + rng() * 0.70,
+      py: 0.15 + rng() * 0.70,
+      rx: 0.04 + rng() * 0.05,
+      ry: 0.02 + rng() * 0.025,
+      strength: 0.55 + rng() * 0.35,
+      ringCount: 1.2 + rng() * 1.4,
+      isDead,
+      deathTime: isDead ? 0.12 + rng() * 0.30 : 1.0,
+      kSmooth: 0.08 + rng() * 0.10,
+      tilt: (rng() - 0.5) * 0.2,
     });
   }
   return knots;
 }
 
-// ─── Main Engine ─────────────────────────────────────────────────────────────
+// ─── Main Engine ────────────────────────────────────────────────────────────
 
 export function initWoodGrainBackground() {
   const canvas = document.getElementById('wood-grain-bg') as HTMLCanvasElement | null;
@@ -192,14 +214,10 @@ export function initWoodGrainBackground() {
   const ctx = canvas.getContext('2d', { alpha: false })!;
   if (!ctx) return;
 
-  // Random seed on every page load
   const globalSeed = (Date.now() ^ (Math.random() * 0x7fffffff)) & 0x7fffffff;
   seedNoise(globalSeed);
 
-  // Seeded PRNG for deterministic randomness within a single render
   let _rngState = globalSeed;
-  // Snapshot taken once — restored before every render so theme/resize switches
-  // never change the pattern (same knots, offsets, ring density every time).
   const renderSeed = globalSeed;
   function rng(): number {
     _rngState = (_rngState * 16807 + 0) % 2147483647;
@@ -208,8 +226,10 @@ export function initWoodGrainBackground() {
 
   let W = 0;
   let H = 0;
-  let isPortrait = false;
   let palette = getCurrentPalette();
+  let firstRender = true;
+  let staticGrain: HTMLCanvasElement | null = null;
+  let rafId = 0;
 
   function getCurrentPalette(): WoodPalette {
     const theme = document.documentElement.getAttribute('data-theme');
@@ -220,7 +240,7 @@ export function initWoodGrainBackground() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
     H = window.innerHeight;
-    isPortrait = H > W;
+
     canvas!.width = W * dpr;
     canvas!.height = H * dpr;
     canvas!.style.width = W + 'px';
@@ -231,15 +251,14 @@ export function initWoodGrainBackground() {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // PIXEL-BASED WOOD GRAIN with domain warping
+  // PIXEL-BASED WOOD GRAIN — time-field model with smooth-minimum knots
   // ═══════════════════════════════════════════════════════════════════════════
 
   function renderWoodGrain() {
-    // Restore rng to the initial snapshot so every re-render (theme switch,
-    // resize) produces the exact same pattern — only the palette changes.
+    // Restore RNG so every re-render (theme switch, resize) produces
+    // the same pattern — only the palette changes.
     _rngState = renderSeed;
 
-    // Render at reduced resolution for performance
     const scale = 0.5;
     const pw = Math.ceil(W * scale);
     const ph = Math.ceil(H * scale);
@@ -251,183 +270,207 @@ export function initWoodGrainBackground() {
     const imageData = octx.createImageData(pw, ph);
     const data = imageData.data;
 
-    // Generate knots — sparse, like real wood
+    // Sparse knots — minimalist: 1-2
     const area = W * H;
-    const knotCount = Math.max(2, Math.floor(area / 600000));
+    const knotCount = Math.max(1, Math.min(2, Math.floor(area / 1200000)));
     const knots = generateKnots(rng, knotCount);
 
-    // Random offsets to make each render unique even with same noise
-    const offsetA = rng() * 500;
-    const offsetB = rng() * 500;
-    const offsetC = rng() * 500;
-    const offsetD = rng() * 500;
+    // Unique offsets for this render
+    const offA = rng() * 500;
+    const offB = rng() * 500;
+    const offC = rng() * 500;
+    const offD = rng() * 500;
+    const offE = rng() * 500;
 
-    // Ring density — how many ring cycles are visible
-    const ringDensity = 10 + rng() * 6;
+    // Ring density — scaled to physical viewport size so a ring occupies
+    // roughly the same real-world width on every screen. The reference is
+    // 1080 CSS px (desktop secondary dimension); narrower viewports get
+    // proportionally fewer rings so they don't appear compressed.
+    const secondaryPx = H;
+    const ringDensity = (9 + rng() * 5) * (secondaryPx / 1080);
 
-    // Knot core color — very dark dead wood (paper: dead knots appear dark/black)
-    const knotCoreR = palette.latewood[0][0] * 0.30;
-    const knotCoreG = palette.latewood[0][1] * 0.28;
-    const knotCoreB = palette.latewood[0][2] * 0.25;
+    // Domain warp normalization: cross-grain warp displacement in pixels is
+    // proportional to H, but ring spacing is constant (~1080/ringBase px).
+    // On tall screens the warp would exceed ring spacing → rings zigzag past
+    // each other → chaotic. Clamp warp to the reference H of 1080px.
+    const warpNorm = Math.min(1.0, 1080 / secondaryPx);
 
-    for (let py = 0; py < ph; py++) {
-      for (let px = 0; px < pw; px++) {
-        const idx = (py * pw + px) * 4;
+    // Dead-wood core color
+    const knotCoreR = palette.latewood[0][0] * 0.25;
+    const knotCoreG = palette.latewood[0][1] * 0.22;
+    const knotCoreB = palette.latewood[0][2] * 0.20;
 
-        // Normalized coordinates
-        const nx = px / pw;
-        const ny = py / ph;
+    for (let iy = 0; iy < ph; iy++) {
+      for (let ix = 0; ix < pw; ix++) {
+        const idx = (iy * pw + ix) * 4;
+        const nx = ix / pw;
+        const ny = iy / ph;
 
-        // ── Grain-space coordinates ──
-        // "across" = perpendicular to grain (drives ring pattern)
-        // "along" = parallel to grain direction
-        let across: number;
-        let along: number;
-        if (isPortrait) {
-          across = nx;
-          along = ny;
-        } else {
-          across = ny;
-          along = nx;
-        }
+        // Grain-space coordinates
+        let across: number, along: number;
+        across = ny;
+        along = nx;
 
         // ── DOMAIN WARPING ──
-        // This is the key to organic, natural-looking flow.
-        // We warp the coordinates before computing the grain pattern.
+        // Two-layer warp for organic, flowing grain.
+        // Stretched along grain direction (4x) so warp creates long flowing curves.
+        const w1x = fbm(along * 2.0 + offA, across * 4.0 + offA, 4);
+        const w1y = fbm(along * 2.0 + offB + 100, across * 4.0 + offB + 100, 4);
+        const wAcross = across + w1y * 0.05 * warpNorm;
+        const wAlong = along + w1x * 0.018;
+        const w2 = fbm(wAlong * 5.0 + offC, wAcross * 8.0 + offC + 200, 3);
+        const fAcross = wAcross + w2 * 0.016 * warpNorm;
 
-        // First warp layer: large-scale flowing distortion
-        // Stretch along grain direction (4x) so warp creates long flowing curves
-        const warp1x = fbm(along * 2.0 + offsetA, across * 4.0 + offsetA, 4);
-        const warp1y = fbm(along * 2.0 + offsetB + 100, across * 4.0 + offsetB + 100, 4);
+        // ── POTENTIAL-FLOW GRAIN DEFLECTION ──
+        // Bends the stem grain contours laterally around each knot.
+        // ψ = across − dc·ry / max(1, r²)
+        let grainAcross = fAcross;
+        for (const knot of knots) {
+          const da = (wAlong - knot.px) / knot.rx;
+          const dc = (fAcross - knot.py) / knot.ry;
+          const r2 = da * da + dc * dc;
+          if (r2 < 50.0) {
+            const r2s = Math.max(1.0, r2);
+            const st = r2 < 1.0 ? 1.0 : knot.strength;
+            grainAcross -= (dc * knot.ry / r2s) * st;
+          }
+        }
 
-        // Anisotropic: strong warp perpendicular to grain, gentle along grain
-        const warpedAcross = across + warp1y * 0.05;
-        const warpedAlong = along + warp1x * 0.018;
+        // ── STEM TIME FIELD ──
+        // On a tangential cut the across-grain coordinate maps to
+        // radial distance from the pith. Multiplied by ring density
+        // to produce the oscillating ring pattern.
+        const stemTime = grainAcross * ringDensity;
 
-        // Second warp layer: medium-scale detail
-        const warp2 = fbm(
-          warpedAlong * 5.0 + offsetC,
-          warpedAcross * 8.0 + offsetC + 200,
-          3
-        );
-        const finalAcross = warpedAcross + warp2 * 0.016;
-
-        // ── KNOT DEFLECTION — potential-flow field ──
-        //
-        // Architecture: knots are placed first, then the grain scalar field is
-        // constructed so its contours (grain lines) naturally flow around each
-        // knot — never through it.
-        //
-        // Mathematics: 2-D potential flow stream function around a unit circle.
-        //   ψ = across  −  dc·ry / max(1, r²)
-        // where r² = da²+dc² in normalised knot coordinates.
-        //
-        //  • r² < 1 (inside knot):  r²→1, so ψ→knot.py — field is constant,
-        //    no trunk-ring contours appear inside the knot at all.
-        //  • r² = 1 (boundary):     ψ = knot.py  (dividing streamline)
-        //  • r² >> 1 (far away):    correction → 0, ψ → across  (straight grain)
-        //
-        // The 1/r² falloff provides natural attenuation — no explicit blending.
-        let grainValue = finalAcross;
-        let knotDarken  = 0;
-        let knotOverride = 0;
-        let knotRingLate = 0;
+        // ── KNOT TIME FIELDS — order-independent smooth-min merge ──
+        // Paper §4.2.3: pairwise deltas summed onto the hard minimum
+        // so the result is independent of knot iteration order.
+        let hardMinAll = stemTime;
+        let smoothDeltaSum = 0;
+        let knotDarken = 0;
 
         for (const knot of knots) {
-          const da = (warpedAlong - knot.px) / knot.rx;
-          const dc = (finalAcross - knot.py) / knot.ry;
+          // Rotated elliptical distance (uses warped, non-deflected coords
+          // so the knot field is purely radial from the knot center)
+          const dx = wAlong - knot.px;
+          const dy = fAcross - knot.py;
+          const ca = Math.cos(knot.tilt);
+          const sa = Math.sin(knot.tilt);
+          const da = (dx * ca + dy * sa) / knot.rx;
+          const dc = (-dx * sa + dy * ca) / knot.ry;
           const r2 = da * da + dc * dc;
-          const r2s = Math.max(1.0, r2);
+          const r = Math.sqrt(r2);
 
-          // ── Potential-flow grain deflection ──
-          // Larger radius lets curvature spread naturally down the plank.
-          // Inside the ellipse (r2 < 1) force full deflection regardless of
-          // knot.strength so grain lines never cut through the knot core.
-          if (r2 < 50.0) {
-            const s = r2 < 1.0 ? 1.0 : knot.strength;
-            grainValue -= (dc * knot.ry / r2s) * s;
+          if (r > 4.5) continue;
+
+          // Noise perturbation — applied only inside the knot and faded
+          // to zero at the boundary so the outer edge stays clean.
+          const kn = fbm(da * 3.0 + knot.px * 40, dc * 3.0 + knot.py * 40, 3);
+          const boundaryFade = Math.max(0, 1.0 - r / 0.85);
+          const pertR = r + kn * 0.15 * boundaryFade;
+
+          // Knot time field — anchored so that at the knot boundary (r≈1)
+          // knotTime matches the stem's time value at the knot position.
+          // Inside the knot (r<1) knotTime < stemTime → knot rings visible.
+          // Outside (r>1) knotTime > stemTime → stem rings take over.
+          const stemTimeAtKnot = knot.py * ringDensity;
+          const knotTime = stemTimeAtKnot + (pertR - 1.0) * knot.ringCount;
+
+          // Hard minimum across all fields
+          hardMinAll = Math.min(hardMinAll, knotTime);
+
+          // Uniform smoothness — constant k gives a consistently smooth
+          // boundary all the way around the knot, no angular artifacts.
+          const kAdaptive = knot.kSmooth * ringDensity;
+
+          // Pairwise smooth min
+          const pairSmin = sminCubic(stemTime, knotTime, kAdaptive);
+          const pairHardMin = Math.min(stemTime, knotTime);
+          let delta = pairSmin - pairHardMin; // always ≤ 0
+
+          // Spatial falloff — delta fades beyond the knot's direct influence
+          const spatialFade = r < 2.0 ? 1.0 : Math.max(0, 1.0 - (r - 2.0) / 2.5);
+          delta *= spatialFade;
+
+          smoothDeltaSum += delta;
+
+          // ── CORE DARKENING ──
+          // Paper §4.3: dead-wood core + knot color darkening
+          if (r < 0.28) {
+            const coreFade = 1.0 - r / 0.28;
+            const coreFade2 = coreFade * coreFade;
+            const baseStr = knot.isDead ? 0.70 : 0.35;
+            knotDarken = Math.max(knotDarken, coreFade2 * baseStr * knot.strength);
           }
 
-          // ── Inner zone: knot's own concentric ring system ──
-          const ellipDist = Math.sqrt(r2);
-          if (ellipDist < 1.1) {
-            const knx = (warpedAlong - knot.px) * 7.0 + knot.px * 60;
-            const kny = (finalAcross  - knot.py) * 7.0 + knot.py * 60;
-            const knotNoise = fbm(knx, kny, 3);
-            const perturbedDist = ellipDist + knotNoise * 0.20 * Math.exp(-ellipDist * 2.2);
-            const spacingVar = fbm(knx * 0.4 + 40, kny * 0.4 + 40, 2);
-            const baseRings = knot.ry * ringDensity * 3.0;
-            const knotPhase = perturbedDist * (baseRings + spacingVar * 0.4) * Math.PI * 2;
-            // cos instead of sin: cos(0)=1 → knotProfile=1 → knotLate=0 (earlywood)
-            // at the knot centre, so no dark ring dot there. knotDarken handles
-            // the dead-wood core colour separately.
-            const knotAbsCos = Math.abs(Math.cos(knotPhase));
-            const knotProfile = Math.pow(knotAbsCos, 0.35);
-            const knotLate = 1.0 - knotProfile;
-
-            const t = ellipDist / 1.1;
-            const weight = (1.0 - t * t * (3.0 - 2.0 * t)) * knot.strength;
-            if (weight > knotOverride) {
-              knotOverride = weight;
-              knotRingLate = knotLate;
-            }
-
-            if (ellipDist < 0.22) {
-              const pith = (1.0 - ellipDist / 0.22) * 0.55 * knot.strength;
-              knotDarken = Math.max(knotDarken, pith);
+          // Dead knot — subtle darkening near the boundary via a soft ring,
+          // wide enough to stay smooth rather than creating a hard edge.
+          if (knot.isDead) {
+            const outW = 0.18 + 0.06 * knot.strength;
+            const outD = Math.abs(r - 1.0);
+            if (outD < outW) {
+              const outline = Math.pow(1.0 - outD / outW, 3) * 0.15 * knot.strength;
+              knotDarken = Math.max(knotDarken, outline);
             }
           }
         }
 
-        // Growth ring irregularity — real trees grow unevenly year to year
-        const growthVar = fbm(grainValue * 5.0 + offsetD, warpedAlong * 3.0, 2);
-        grainValue += growthVar * 0.008;
+        // Final merged time field
+        let mergedTime = hardMinAll + smoothDeltaSum;
 
-        // ── RING PATTERN ──
-        // Asymmetric profile: wide smooth earlywood, narrow sharp latewood
-        const ringPhase = grainValue * ringDensity * Math.PI * 2;
-        const sinVal = Math.sin(ringPhase);
+        // ── GROWTH IRREGULARITY ──
+        // Real trees grow unevenly year to year
+        const growthVar = fbm(mergedTime * 0.5 + offD, wAlong * 3.0, 2);
+        mergedTime += growthVar * 0.25;
 
-        // Use pow(abs(sin), exponent) to control ring shape:
-        // Low exponent = sharp dark lines with wide light areas (like real wood)
-        const absSin = Math.abs(sinVal);
-
-        // Vary the sharpness across the surface for natural inconsistency
-        const sharpnessNoise = fbm(
-          warpedAlong * 3.0 + offsetD + 300,
-          warpedAcross * 3.0 + offsetD + 300,
+        // ── RING PATTERN — asymmetric earlywood / latewood ──
+        // pow(abs(sin), exp): low exponent = sharp dark lines with wide
+        // light bands, matching natural wood ring asymmetry.
+        const ringPhase = mergedTime * Math.PI * 2;
+        const absSin = Math.abs(Math.sin(ringPhase));
+        const sharpNoise = fbm(
+          wAlong * 3.0 + offD + 300,
+          wAcross * 3.0 + offD + 300,
           2
         );
-        const exponent = 0.3 + sharpnessNoise * 0.15;
+        const exponent = 0.55 + sharpNoise * 0.20;
         const ringProfile = Math.pow(absSin, exponent);
+        const latewood = 1.0 - ringProfile;
 
-        // ringProfile is ~1 in wide earlywood areas, drops sharply to 0 at latewood lines
-        // Invert: 0 = earlywood (light), 1 = latewood (dark line)
-        const latewoodIntensity = 1 - ringProfile;
+        // ── MEDULLARY RAYS ──
+        // Subtle perpendicular highlights (across-grain) — visible in
+        // real wood as short flecks on tangential cuts.
+        const rayNoise = simplex2(along * 80 + offE, across * 200 + offE);
+        const rayMask = simplex2(along * 12 + offE + 50, across * 2 + offE + 50);
+        const rayIntensity = Math.max(0, rayNoise) * Math.max(0, rayMask) * 0.10;
 
         // ── COLOR MAPPING ──
-        // Gradual variation across the surface
-        const colorVariation = fbm(nx * 3 + offsetA + 400, ny * 3 + offsetB + 400, 3);
-        const colorT = Math.max(0, Math.min(1, 0.5 + colorVariation * 0.5));
+        const colorVar = fbm(nx * 3.0 + offA + 400, ny * 3.0 + offB + 400, 3);
+        const colorT = Math.max(0, Math.min(1, 0.5 + colorVar * 0.5));
 
         const earlyColor = sampleGradient(palette.earlywood, colorT);
         const lateColor = sampleGradient(palette.latewood, colorT);
+        let [cr, cg, cb] = lerpRGB(earlyColor, lateColor, latewood);
 
-        // Overlay knot rings on top of the existing grain — never replace it.
-        // The outer warp already curves grain lines around the knot; here we
-        // add concentric ring lines between them. Math.max keeps whichever
-        // pattern is darker at each pixel, so both coexist.
-        const finalLatewood = Math.max(latewoodIntensity, knotRingLate * knotOverride);
-        const [r, g, b] = lerpRGB(earlyColor, lateColor, finalLatewood);
+        // Medullary ray highlight
+        if (rayIntensity > 0.001) {
+          cr += (palette.ray[0] - cr) * rayIntensity;
+          cg += (palette.ray[1] - cg) * rayIntensity;
+          cb += (palette.ray[2] - cb) * rayIntensity;
+        }
 
-        // ── SUBTLE DEPTH ──
-        const depth = fbm(nx * 6 + 500, ny * 6 + 500, 2);
-        const brightness = 0.96 + depth * 0.08;
+        // Subtle depth variation
+        const depth = fbm(nx * 6.0 + 500, ny * 6.0 + 500, 2);
+        const brightness = 0.99 + depth * 0.03;
 
-        // Blend toward dark dead-wood core where knotDarken > 0
-        data[idx]     = Math.max(0, Math.min(255, r * brightness * (1 - knotDarken) + knotCoreR * knotDarken));
-        data[idx + 1] = Math.max(0, Math.min(255, g * brightness * (1 - knotDarken) + knotCoreG * knotDarken));
-        data[idx + 2] = Math.max(0, Math.min(255, b * brightness * (1 - knotDarken) + knotCoreB * knotDarken));
+        // Blend toward dead-wood core
+        const finalR = cr * brightness * (1 - knotDarken) + knotCoreR * knotDarken;
+        const finalG = cg * brightness * (1 - knotDarken) + knotCoreG * knotDarken;
+        const finalB = cb * brightness * (1 - knotDarken) + knotCoreB * knotDarken;
+
+        data[idx]     = Math.max(0, Math.min(255, finalR));
+        data[idx + 1] = Math.max(0, Math.min(255, finalG));
+        data[idx + 2] = Math.max(0, Math.min(255, finalB));
         data[idx + 3] = 255;
       }
     }
@@ -439,34 +482,59 @@ export function initWoodGrainBackground() {
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(offscreen, 0, 0, W, H);
 
-    // ── Overlay passes ──
-    renderGrainLines(knots);
+    // Overlay passes
+    renderFiberLines(knots);
     renderMicroTexture();
+
+    // Cache the fully-rendered frame for the animation loop
+    if (!staticGrain || staticGrain.width !== canvas!.width || staticGrain.height !== canvas!.height) {
+      staticGrain = document.createElement('canvas');
+      staticGrain.width = canvas!.width;
+      staticGrain.height = canvas!.height;
+    }
+    const sc = staticGrain.getContext('2d');
+    if (sc) sc.drawImage(canvas!, 0, 0);
+
+    // Fade in on first render — html bg color is already set so there's
+    // no white flash, just a smooth shift from flat color to texture.
+    if (firstRender) {
+      firstRender = false;
+      requestAnimationFrame(() => { canvas!.style.opacity = '1'; });
+      startAnimLoop();
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // GRAIN LINE OVERLAY — adds fine definition on top of pixel base
+  // FIBER LINE OVERLAY — fine grain lines that follow the deflected field
   // ═══════════════════════════════════════════════════════════════════════════
 
-  function renderGrainLines(knots: Knot[]) {
-    const primaryLen = isPortrait ? H : W;
-    const secondaryLen = isPortrait ? W : H;
-    const lineCount = Math.floor(secondaryLen / 5);
+  function renderFiberLines(knots: Knot[]) {
+    const primaryLen = W;
+    const secondaryLen = H;
+    // Scale fiber line spacing with the viewport, matching the ring density scaling.
+    const lineSpacing = 6 * (secondaryLen / 1080);
+    const lineCount = Math.floor(secondaryLen / lineSpacing);
+
+    // Cross-grain warp scale: keeps pixel displacement a consistent fraction
+    // of line length (primaryLen) across all aspect ratios.
+    // Reference: 1920×1080 landscape → scale = 1.0 (preserves current look).
+    // Taller viewports get a smaller coefficient so lines stay smooth.
+    const warpScale = Math.min(1.0, (primaryLen * 1080) / (secondaryLen * 1920));
 
     for (let i = 0; i < lineCount; i++) {
       const baseT = i / lineCount;
 
       const prominence = simplex2(baseT * 30.0 + 500, 0.5);
-      if (prominence < 0.15) continue;
+      if (prominence < 0.18) continue;
 
       const isStrong = prominence > 0.55;
-      const alpha = isStrong ? 0.05 + rng() * 0.07 : 0.015 + rng() * 0.025;
-      const lineWidth = isStrong ? 0.5 + rng() * 0.8 : 0.2 + rng() * 0.4;
+      const alpha = isStrong ? 0.02 + rng() * 0.03 : 0.006 + rng() * 0.012;
+      const lineWidth = isStrong ? 0.4 + rng() * 0.7 : 0.15 + rng() * 0.35;
 
       const colorT = 0.3 + rng() * 0.4;
-      const [r, g, b] = sampleGradient(palette.latewood, colorT);
+      const [lr, lg, lb] = sampleGradient(palette.latewood, colorT);
 
-      ctx.strokeStyle = `rgba(${r | 0},${g | 0},${b | 0},${alpha})`;
+      ctx.strokeStyle = `rgba(${lr | 0},${lg | 0},${lb | 0},${alpha})`;
       ctx.lineWidth = lineWidth;
       ctx.lineCap = 'round';
       ctx.beginPath();
@@ -474,39 +542,54 @@ export function initWoodGrainBackground() {
       const steps = Math.max(60, Math.floor(primaryLen / 10));
       let prevX = 0, prevY = 0;
 
-      for (let s = 0; s <= steps; s++) {
-        const along = s / steps;
+      for (let si = 0; si <= steps; si++) {
+        const along = si / steps;
         const across = baseT;
 
-        // Domain warp matching the pixel pass
+        // Domain warp (matches pixel pass, 3 octaves for speed)
         const w1 = fbm(along * 2.0, across * 4.0, 3);
-        const w2 = fbm(along * 2.0 + 100, across * 4.0 + 100, 3);
-        const wa = across + w2 * 0.06;
+        const w2l = fbm(along * 2.0 + 100, across * 4.0 + 100, 3);
+        const wa = across + w2l * 0.06 * warpScale;
         const wl = along + w1 * 0.02;
-
         const w3 = fbm(wl * 5.0, wa * 8.0 + 200, 2);
-        let finalAcross = wa + w3 * 0.02;
+        let fA = wa + w3 * 0.02 * warpScale;
 
-        // Knot bending — same potential-flow formula as the pixel pass
+        // Potential-flow knot deflection + dead-knot butterfly
         for (const knot of knots) {
           const da = (wl - knot.px) / knot.rx;
-          const dc = (finalAcross - knot.py) / knot.ry;
+          const dc = (fA - knot.py) / knot.ry;
           const r2 = da * da + dc * dc;
           if (r2 < 50.0) {
             const r2s = Math.max(1.0, r2);
-            const s = r2 < 1.0 ? 1.0 : knot.strength;
-            finalAcross -= (dc * knot.ry / r2s) * s;
+            // Soften deflection inside the knot to avoid line convergence
+            const st = r2 < 1.0
+              ? knot.strength * 0.5
+              : knot.strength;
+            fA -= (dc * knot.ry / r2s) * st;
+
+            // Butterfly deflection for dead knots
+            if (knot.isDead && r2 > 0.15 && r2 < 9.0) {
+              const r = Math.sqrt(r2);
+              const angle = Math.atan2(dc, da);
+              const bf = Math.cos(2 * angle) * 0.005
+                * Math.exp(-r * 0.5) * knot.strength;
+              fA += bf;
+            }
           }
         }
 
-        const pos = finalAcross * secondaryLen;
+        const pos = fA * secondaryLen;
         const prim = along * primaryLen;
-        const cx = isPortrait ? pos : prim;
-        const cy = isPortrait ? prim : pos;
+        const cx = prim;
+        const cy = pos;
 
-        if (s === 0) {
+        if (si === 0) {
           ctx.moveTo(cx, cy);
         } else {
+          // Skip degenerate micro-segments — they cause pixelation
+          const dx = cx - prevX;
+          const dy = cy - prevY;
+          if (dx * dx + dy * dy < 1.0) continue;
           const mx = (prevX + cx) / 2;
           const my = (prevY + cy) / 2;
           ctx.quadraticCurveTo(prevX, prevY, mx, my);
@@ -519,34 +602,70 @@ export function initWoodGrainBackground() {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // MICRO TEXTURE
+  // MICRO TEXTURE — subtle surface grain noise
   // ═══════════════════════════════════════════════════════════════════════════
 
   function renderMicroTexture() {
     const tw = Math.ceil(W / 3);
     const th = Math.ceil(H / 3);
-    const offscreen = document.createElement('canvas');
-    offscreen.width = tw;
-    offscreen.height = th;
-    const octx = offscreen.getContext('2d')!;
-    const imageData = octx.createImageData(tw, th);
-    const d = imageData.data;
+    const off = document.createElement('canvas');
+    off.width = tw;
+    off.height = th;
+    const tctx = off.getContext('2d')!;
+    const img = tctx.createImageData(tw, th);
+    const d = img.data;
 
     for (let i = 0; i < d.length; i += 4) {
-      const n = (Math.random() - 0.5) * 10;
+      const n = (Math.random() - 0.5) * 8;
       d[i] = 128 + n;
       d[i + 1] = 128 + n;
       d[i + 2] = 128 + n;
-      d[i + 3] = 5;
+      d[i + 3] = 4;
     }
-    octx.putImageData(imageData, 0, 0);
-    ctx.drawImage(offscreen, 0, 0, W, H);
+    tctx.putImageData(img, 0, 0);
+    ctx.drawImage(off, 0, 0, W, H);
   }
 
-  // ─── Theme observer ───
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ANIMATION LOOP — slow ambient shimmer over the static grain
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function startAnimLoop() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    cancelAnimationFrame(rafId);
+    const t0 = performance.now();
+
+    function frame(ts: number) {
+      if (staticGrain) {
+        const t = (ts - t0) * 0.001;
+
+        // Restore static grain each frame
+        ctx.drawImage(staticGrain, 0, 0, W, H);
+
+        // Slow ambient light drift — soft radial glow on a Lissajous path.
+        // Periods ~22s and ~31s (incommensurable so the pattern never repeats).
+        const sx = W * (0.5 + 0.38 * Math.sin(t * 0.2856));
+        const sy = H * (0.5 + 0.28 * Math.cos(t * 0.2027));
+        const r  = Math.max(W, H) * 0.80;
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        const shimAlpha = isDark ? 0.028 : 0.020;
+
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+        g.addColorStop(0, `rgba(255,255,255,${shimAlpha})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      rafId = requestAnimationFrame(frame);
+    }
+
+    rafId = requestAnimationFrame(frame);
+  }
+
+  // ─── Theme observer ───────────────────────────────────────────────────────
   const observer = new MutationObserver(() => {
     palette = getCurrentPalette();
-    // Re-render (keeps same seed/knots since rng state persists)
     resize();
   });
   observer.observe(document.documentElement, {
@@ -554,19 +673,20 @@ export function initWoodGrainBackground() {
     attributeFilter: ['data-theme'],
   });
 
-  // ─── Debounced resize ───
+  // ─── Debounced resize ─────────────────────────────────────────────────────
   let resizeTimer: ReturnType<typeof setTimeout>;
   function onResize() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(resize, 200);
   }
 
-  // ─── Init ───
+  // ─── Init ─────────────────────────────────────────────────────────────────
   window.addEventListener('resize', onResize);
   resize();
 
   return () => {
     observer.disconnect();
     window.removeEventListener('resize', onResize);
+    cancelAnimationFrame(rafId);
   };
 }
