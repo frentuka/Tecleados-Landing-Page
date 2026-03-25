@@ -226,6 +226,7 @@ export function initWoodGrainBackground() {
 
   let W = 0;
   let H = 0;
+  let isPortrait = false;
   let palette = getCurrentPalette();
   let firstRender = true;
   let staticGrain: HTMLCanvasElement | null = null;
@@ -282,17 +283,21 @@ export function initWoodGrainBackground() {
     const offD = rng() * 500;
     const offE = rng() * 500;
 
+    // Grain orientation: run along the longer axis so veins always look
+    // smooth and parallel regardless of viewport aspect ratio.
+    isPortrait = H > W;
+
     // Ring density — scaled to physical viewport size so a ring occupies
     // roughly the same real-world width on every screen. The reference is
     // 1080 CSS px (desktop secondary dimension); narrower viewports get
     // proportionally fewer rings so they don't appear compressed.
-    const secondaryPx = H;
+    const secondaryPx = isPortrait ? W : H;
     const ringDensity = (9 + rng() * 5) * (secondaryPx / 1080);
 
     // Domain warp normalization: cross-grain warp displacement in pixels is
-    // proportional to H, but ring spacing is constant (~1080/ringBase px).
-    // On tall screens the warp would exceed ring spacing → rings zigzag past
-    // each other → chaotic. Clamp warp to the reference H of 1080px.
+    // proportional to the cross-grain dimension, but ring spacing is constant
+    // (~1080/ringBase px). On screens where the cross-grain dimension exceeds
+    // 1080 the warp would exceed ring spacing → rings zigzag → chaotic.
     const warpNorm = Math.min(1.0, 1080 / secondaryPx);
 
     // Dead-wood core color
@@ -306,10 +311,15 @@ export function initWoodGrainBackground() {
         const nx = ix / pw;
         const ny = iy / ph;
 
-        // Grain-space coordinates
+        // Grain-space coordinates — grain runs along the longer axis
         let across: number, along: number;
-        across = ny;
-        along = nx;
+        if (isPortrait) {
+          across = nx;
+          along = ny;
+        } else {
+          across = ny;
+          along = nx;
+        }
 
         // ── DOMAIN WARPING ──
         // Two-layer warp for organic, flowing grain.
@@ -509,8 +519,9 @@ export function initWoodGrainBackground() {
   // ═══════════════════════════════════════════════════════════════════════════
 
   function renderFiberLines(knots: Knot[]) {
-    const primaryLen = W;
-    const secondaryLen = H;
+    // Fiber lines follow the grain direction (along the longer axis)
+    const primaryLen = isPortrait ? H : W;
+    const secondaryLen = isPortrait ? W : H;
     // Scale fiber line spacing with the viewport, matching the ring density scaling.
     const lineSpacing = 6 * (secondaryLen / 1080);
     const lineCount = Math.floor(secondaryLen / lineSpacing);
@@ -580,8 +591,9 @@ export function initWoodGrainBackground() {
 
         const pos = fA * secondaryLen;
         const prim = along * primaryLen;
-        const cx = prim;
-        const cy = pos;
+        // In portrait, grain runs vertically so swap axes
+        const cx = isPortrait ? pos : prim;
+        const cy = isPortrait ? prim : pos;
 
         if (si === 0) {
           ctx.moveTo(cx, cy);

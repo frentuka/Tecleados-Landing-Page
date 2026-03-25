@@ -16,12 +16,12 @@ export function initAnimations() {
   // Fade up animations
   gsap.utils.toArray<HTMLElement>('[data-animate="fade-up"]').forEach((el) => {
     gsap.fromTo(el,
-      { y: 40, opacity: 0 },
+      { y: 24, opacity: 0 },
       {
         y: 0,
         opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
+        duration: 0.9,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',
@@ -37,8 +37,8 @@ export function initAnimations() {
       { opacity: 0 },
       {
         opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
+        duration: 0.9,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',
@@ -51,12 +51,12 @@ export function initAnimations() {
   // Slide from left
   gsap.utils.toArray<HTMLElement>('[data-animate="slide-left"]').forEach((el) => {
     gsap.fromTo(el,
-      { x: -60, opacity: 0 },
+      { x: -32, opacity: 0 },
       {
         x: 0,
         opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
+        duration: 0.9,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',
@@ -69,12 +69,12 @@ export function initAnimations() {
   // Slide from right
   gsap.utils.toArray<HTMLElement>('[data-animate="slide-right"]').forEach((el) => {
     gsap.fromTo(el,
-      { x: 60, opacity: 0 },
+      { x: 32, opacity: 0 },
       {
         x: 0,
         opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
+        duration: 0.9,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',
@@ -88,13 +88,13 @@ export function initAnimations() {
   gsap.utils.toArray<HTMLElement>('[data-animate="stagger"]').forEach((container) => {
     const children = Array.from(container.children) as HTMLElement[];
     gsap.fromTo(children,
-      { y: 40, opacity: 0 },
+      { y: 24, opacity: 0 },
       {
         y: 0,
         opacity: 1,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: 'power2.out',
+        duration: 0.7,
+        stagger: 0.12,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: container,
           start: 'top 80%',
@@ -107,12 +107,12 @@ export function initAnimations() {
   // Scale in
   gsap.utils.toArray<HTMLElement>('[data-animate="scale-in"]').forEach((el) => {
     gsap.fromTo(el,
-      { scale: 0.9, opacity: 0 },
+      { scale: 0.94, opacity: 0 },
       {
         scale: 1,
         opacity: 1,
-        duration: 0.7,
-        ease: 'power2.out',
+        duration: 0.8,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
           start: 'top 85%',

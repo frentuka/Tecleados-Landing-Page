@@ -233,13 +233,13 @@ class ViewEngine {
         const animName = el.dataset.anim;
         const duration = el.dataset.animDuration || '0.6s';
         if (animName) {
-          // Element has a specific named animation — apply inline
-          el.style.animation = `${animName} ${duration} ease both`;
+          // Element has a specific named animation — smooth expo-out deceleration
+          el.style.animation = `${animName} ${duration} cubic-bezier(0.16, 1, 0.3, 1) both`;
         } else {
           // Fall back to per-view CSS class animation
           el.classList.add('enter-active');
         }
-      }, 80 + i * 60);
+      }, 100 + i * 80);
       this.entranceTimers.push(timer);
     });
   }

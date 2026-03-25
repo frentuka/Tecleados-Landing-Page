@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
   <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center lg:px-10">
     <div class="mx-auto w-full max-w-2xl">
       <!-- Floating cube icon -->
-      <div data-enter data-anim="spiral-cube" data-anim-duration="0.85s" class="mb-5">
+      <div data-enter data-anim="spiral-cube" data-anim-duration="0.9s" class="mb-5">
         <svg viewBox="0 0 200 200" class="mx-auto h-14 w-14 opacity-60" style="animation: float 4s ease-in-out infinite;">
           <polygon points="100,100 30,65 30,135 100,170" fill="var(--color-digital-500)" opacity="0.7"/>
           <polygon points="100,100 170,65 170,135 100,170" fill="var(--color-human-500)" opacity="0.7"/>
@@ -21,16 +21,16 @@ const year = new Date().getFullYear();
       </div>
 
       <!-- CTA Heading -->
-      <h2 data-enter data-anim="cta-title" data-anim-duration="0.65s" class="mb-3 text-[length:var(--text-h1)] font-semibold leading-tight">
+      <h2 data-enter data-anim="cta-title" data-anim-duration="0.7s" class="mb-3 text-[length:var(--text-h1)] font-semibold leading-tight">
         Tu próximo teclado nace de un árbol
       </h2>
 
-      <p data-enter data-anim="drift-diagonal" data-anim-duration="0.55s" class="t-text-2 mx-auto mb-6 max-w-xl text-[length:var(--text-body)] font-light leading-relaxed">
+      <p data-enter data-anim="drift-diagonal" data-anim-duration="0.6s" class="t-text-2 mx-auto mb-6 max-w-xl text-[length:var(--text-body)] font-light leading-relaxed">
         Dejanos tu email y te avisamos cuando lancemos nuestra primera edición.
       </p>
 
       <!-- Email Form -->
-      <form data-enter data-anim="form-materialize" data-anim-duration="0.55s" id="contact-form" class="mx-auto flex max-w-md flex-col gap-2 sm:flex-row">
+      <form data-enter data-anim="form-materialize" data-anim-duration="0.65s" id="contact-form" class="mx-auto flex max-w-md flex-col gap-2 sm:flex-row">
         <input
           type="email"
           id="email-input"
@@ -54,7 +54,7 @@ const year = new Date().getFullYear();
       </div>
 
       <!-- Testimonial (single, rotating) -->
-      <div data-enter data-anim="testimonial-rise" data-anim-duration="0.65s" class="t-border mt-6 border-t pt-5">
+      <div data-enter data-anim="testimonial-rise" data-anim-duration="0.6s" class="t-border mt-6 border-t pt-5">
         <div id="testimonial-display">
           <blockquote class="t-text-2 text-sm italic leading-relaxed">
             "{testimonials[0].quote}"
@@ -68,7 +68,7 @@ const year = new Date().getFullYear();
       </div>
 
       <!-- Social links -->
-      <div data-enter data-anim="social-pop" data-anim-duration="0.55s" class="mt-5 flex flex-wrap items-center justify-center gap-3">
+      <div data-enter data-anim="social-pop" data-anim-duration="0.5s" class="mt-5 flex flex-wrap items-center justify-center gap-3">
         {['Discord', 'Instagram', 'Reddit', 'GitHub'].map((platform) => (
           <a
             href="#"
@@ -80,7 +80,7 @@ const year = new Date().getFullYear();
       </div>
 
       <!-- Contact email -->
-      <a data-enter data-anim="glow-reveal" data-anim-duration="0.5s" href="mailto:hola@tecleados.com" class="mt-3 inline-block font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-400 transition-colors hover:text-digital-300">
+      <a data-enter data-anim="glow-reveal" data-anim-duration="0.55s" href="mailto:hola@tecleados.com" class="mt-3 inline-block font-[var(--font-mono)] text-[length:var(--text-mono-sm)] text-digital-400 transition-colors hover:text-digital-300">
         hola@tecleados.com
       </a>
 
