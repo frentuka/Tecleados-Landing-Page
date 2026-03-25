@@ -6,6 +6,7 @@ const views = [
   { id: 'proceso', label: 'Proceso' },
   { id: 'maderas', label: 'Maderas' },
   { id: 'specs', label: 'Specs' },
+  { id: 'firmware', label: 'Firmware' },
   { id: 'contacto', label: 'Contacto' },
 ];
 ---
@@ -18,14 +19,141 @@ const views = [
         class:list={['nav-key', { 'nav-key--active': i === 0 }]}
         aria-label={`Ir a ${view.label}`}
       >
-        {i === 0 ? (
-          <svg class="h-4 w-4" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <polygon points="16,18 6,13 6,23 16,28" fill="var(--color-digital-500)" opacity="0.85"/>
-            <polygon points="16,18 26,13 26,23 16,28" fill="var(--color-human-500)" opacity="0.85"/>
-            <polygon points="16,8 6,13 16,18 26,13" fill="var(--color-natural-500)" opacity="0.75"/>
-          </svg>
-        ) : (
-          <span>{view.label}</span>
+        {/* ── Inicio: Isometric cube (brand logo) ── */}
+        {i === 0 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <polygon points="8,10 2,7 2,13 8,16" fill="var(--color-digital-500)" opacity="0.85"/>
+              <polygon points="8,10 14,7 14,13 8,16" fill="var(--color-human-500)" opacity="0.85"/>
+              <polygon points="8,4 2,7 8,10 14,7" fill="var(--color-natural-500)" opacity="0.75"/>
+            </svg>
+            <svg class="nav-logo-desktop h-4 w-4" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <polygon points="16,18 6,13 6,23 16,28" fill="var(--color-digital-500)" opacity="0.85"/>
+              <polygon points="16,18 26,13 26,23 16,28" fill="var(--color-human-500)" opacity="0.85"/>
+              <polygon points="16,8 6,13 16,18 26,13" fill="var(--color-natural-500)" opacity="0.75"/>
+            </svg>
+          </Fragment>
+        )}
+
+        {/* ── Historia: Open book (pixel-art) ── */}
+        {i === 1 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="2" y="3" width="5" height="10" fill="currentColor" opacity="0.7"/>
+              <rect x="9" y="3" width="5" height="10" fill="currentColor" opacity="0.5"/>
+              <rect x="7" y="2" width="2" height="12" fill="currentColor" opacity="0.9"/>
+              <rect x="3" y="5" width="3" height="1" fill="var(--color-human-400)" opacity="0.8"/>
+              <rect x="3" y="7" width="3" height="1" fill="var(--color-human-400)" opacity="0.5"/>
+              <rect x="10" y="5" width="3" height="1" fill="var(--color-human-400)" opacity="0.8"/>
+              <rect x="10" y="7" width="3" height="1" fill="var(--color-human-400)" opacity="0.5"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Teclados: Keyboard (pixel-art) ── */}
+        {i === 2 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="1" y="4" width="14" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+              <rect x="2" y="5" width="2" height="2" fill="currentColor" opacity="0.8"/>
+              <rect x="5" y="5" width="2" height="2" fill="currentColor" opacity="0.8"/>
+              <rect x="8" y="5" width="2" height="2" fill="currentColor" opacity="0.8"/>
+              <rect x="11" y="5" width="3" height="2" fill="var(--color-digital-400)" opacity="0.7"/>
+              <rect x="2" y="8" width="2" height="2" fill="currentColor" opacity="0.8"/>
+              <rect x="5" y="8" width="6" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="12" y="8" width="2" height="2" fill="currentColor" opacity="0.8"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Proceso: Crafting / hammer + anvil (pixel-art) ── */}
+        {i === 3 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="3" y="2" width="4" height="2" fill="currentColor" opacity="0.9"/>
+              <rect x="4" y="4" width="2" height="5" fill="currentColor" opacity="0.7"/>
+              <rect x="3" y="9" width="4" height="1" fill="currentColor" opacity="0.5"/>
+              <rect x="9" y="6" width="5" height="2" fill="var(--color-natural-400)" opacity="0.6"/>
+              <rect x="8" y="8" width="7" height="3" fill="currentColor" opacity="0.5"/>
+              <rect x="9" y="11" width="2" height="2" fill="currentColor" opacity="0.4"/>
+              <rect x="12" y="11" width="2" height="2" fill="currentColor" opacity="0.4"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Maderas: Tree / log (pixel-art) ── */}
+        {i === 4 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="6" y="9" width="4" height="5" fill="var(--color-human-500)" opacity="0.7"/>
+              <rect x="4" y="5" width="8" height="5" rx="1" fill="var(--color-natural-500)" opacity="0.7"/>
+              <rect x="5" y="3" width="6" height="4" rx="1" fill="var(--color-natural-400)" opacity="0.8"/>
+              <rect x="6" y="1" width="4" height="3" rx="1" fill="var(--color-natural-300)" opacity="0.7"/>
+              <rect x="3" y="6" width="2" height="3" rx="1" fill="var(--color-natural-400)" opacity="0.6"/>
+              <rect x="11" y="5" width="2" height="3" rx="1" fill="var(--color-natural-400)" opacity="0.6"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Specs: Redstone / circuit (pixel-art) ── */}
+        {i === 5 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="6" y="6" width="4" height="4" fill="currentColor" opacity="0.8"/>
+              <rect x="2" y="7" width="4" height="2" fill="currentColor" opacity="0.4"/>
+              <rect x="10" y="7" width="4" height="2" fill="currentColor" opacity="0.4"/>
+              <rect x="7" y="2" width="2" height="4" fill="currentColor" opacity="0.4"/>
+              <rect x="7" y="10" width="2" height="4" fill="currentColor" opacity="0.4"/>
+              <rect x="1" y="7" width="2" height="2" fill="var(--color-digital-400)" opacity="0.8"/>
+              <rect x="13" y="7" width="2" height="2" fill="var(--color-digital-400)" opacity="0.8"/>
+              <rect x="7" y="1" width="2" height="2" fill="var(--color-digital-400)" opacity="0.8"/>
+              <rect x="7" y="13" width="2" height="2" fill="var(--color-digital-400)" opacity="0.8"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Firmware: Command block / chip (pixel-art) ── */}
+        {i === 6 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="3" y="3" width="10" height="10" rx="1" fill="currentColor" opacity="0.3"/>
+              <rect x="5" y="5" width="6" height="6" fill="var(--color-digital-500)" opacity="0.5"/>
+              <rect x="6" y="6" width="4" height="4" fill="var(--color-digital-400)" opacity="0.9"/>
+              <rect x="1" y="5" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="1" y="7" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="1" y="9" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="5" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="7" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="9" width="2" height="1" fill="currentColor" opacity="0.6"/>
+              <rect x="5" y="1" width="1" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="7" y="1" width="1" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="9" y="1" width="1" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="5" y="13" width="1" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="7" y="13" width="1" height="2" fill="currentColor" opacity="0.6"/>
+              <rect x="9" y="13" width="1" height="2" fill="currentColor" opacity="0.6"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
+        )}
+
+        {/* ── Contacto: Envelope (pixel-art) ── */}
+        {i === 7 && (
+          <Fragment>
+            <svg class="nav-icon h-[14px] w-[14px]" viewBox="0 0 16 16" aria-hidden="true">
+              <rect x="1" y="4" width="14" height="9" rx="1" fill="currentColor" opacity="0.3"/>
+              <polygon points="1,4 8,9 15,4" fill="currentColor" opacity="0.7"/>
+              <rect x="2" y="5" width="2" height="1" fill="currentColor" opacity="0.5"/>
+              <rect x="12" y="5" width="2" height="1" fill="currentColor" opacity="0.5"/>
+              <polygon points="1,13 6,9" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.3"/>
+              <polygon points="15,13 10,9" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.3"/>
+            </svg>
+            <span class="nav-label-full">{view.label}</span>
+          </Fragment>
         )}
       </button>
     ))}
@@ -34,7 +162,7 @@ const views = [
 
     <button
       data-theme-toggle
-      class="nav-key nav-key--theme"
+      class="nav-key nav-key--util"
       aria-label="Cambiar tema"
     >
       <span class="theme-icon-sun" aria-hidden="true">☀</span>
@@ -43,7 +171,7 @@ const views = [
 
     <button
       data-dev-toggle
-      class="nav-key nav-key--dev"
+      class="nav-key nav-key--util"
       aria-label="Activar modo desarrollador"
     >
       &lt;/&gt;

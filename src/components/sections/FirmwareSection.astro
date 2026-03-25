@@ -1,0 +1,162 @@
+---
+const panels = [
+  {
+    node: '01',
+    title: 'Conectividad Dual',
+    body: 'USB HID con N-Key Rollover completo vía TinyUSB — boot-compatible 6KRO y NKRO real con bitmap de 32 bytes. Bluetooth LE 5.0 con hasta 9 perfiles de emparejamiento independientes, cada uno con su dirección y bonds persistentes.',
+    tags: ['USB-C', 'BLE 5.0', 'NKRO', '9 perfiles'],
+  },
+  {
+    node: '02',
+    title: 'Capas & Macros',
+    body: '4 capas de mapeo — Base, FN1, FN2 y FN3 — con soporte de transparencia para overrides selectivos. 64 macros programables con hasta 256 eventos cada una, 8 modos de ejecución (once, hold, toggle, burst) y llamadas recursivas de hasta 5 niveles.',
+    tags: ['4 layers', '64 macros', '256 events', 'MultiAction'],
+  },
+  {
+    node: '03',
+    title: 'Configurador Web',
+    body: 'Aplicación React 19 sobre WebHID — conectás tu Tecleados por USB y configurás todo desde el navegador. Asignación visual de teclas, editor de macros, gestión de perfiles BLE, modo developer con inspección de paquetes, import/export KLE.',
+    tags: ['WebHID', 'React 19', 'Zustand', 'KLE Import'],
+  },
+  {
+    node: '04',
+    title: 'Hardware & Escaneo',
+    body: 'Matriz de 6×18 (108 teclas) escaneada a 1200 Hz con debounce de 5 escaneos. Arquitectura modular basada en eventos sobre ESP-IDF v5.5 para el ESP32-S3. LED WS2812 con feedback visual, configuración persistente en NVS flash.',
+    tags: ['ESP32-S3', '1200 Hz', 'ESP-IDF', 'NVS Flash'],
+  },
+  {
+    node: '05',
+    title: 'Roadmap',
+    body: 'Reporte de batería inteligente, conectividad 2.4 GHz vía ESP-NOW con dongle dedicado, soporte para split keyboard con comunicación host/slave, integración de pantalla OLED, y capa de compatibilidad QMK.',
+    tags: ['Batería', 'ESP-NOW', 'Split', 'OLED'],
+  },
+];
+---
+
+<section class="view view--hidden" id="firmware">
+  <!-- Circuit-board grid background -->
+  <div class="pointer-events-none absolute inset-0 opacity-[0.03]" aria-hidden="true"
+    style="background-image:
+      linear-gradient(var(--color-digital-500) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-digital-500) 1px, transparent 1px);
+      background-size: 32px 32px;">
+  </div>
+
+  <!-- Scanline overlay -->
+  <div class="pointer-events-none absolute inset-0 opacity-[0.015]" aria-hidden="true"
+    style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--color-digital-400) 2px, var(--color-digital-400) 3px);">
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
+    <div class="mx-auto w-full max-w-4xl">
+
+      <!-- Header -->
+      <div data-enter data-anim="signal-header" data-anim-duration="0.6s" class="mb-6 text-center sm:mb-8 lg:mb-10">
+        <div class="mb-1.5 flex items-center justify-center gap-2 sm:mb-2">
+          <span class="inline-block h-1.5 w-6 rounded-full bg-digital-500 sm:h-2 sm:w-8" aria-hidden="true"></span>
+          <p class="t-text-muted font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em]">
+            DF-ONE // ESP32-S3
+          </p>
+          <span class="inline-block h-1.5 w-6 rounded-full bg-digital-500 sm:h-2 sm:w-8" aria-hidden="true"></span>
+        </div>
+        <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight">
+          Firmware propio
+        </h2>
+      </div>
+
+      <!-- Panel Nodes -->
+      <div data-enter data-anim="pulse-up" data-anim-duration="0.65s" class="mb-6 flex items-center justify-center gap-1 sm:mb-8 sm:gap-2 lg:gap-3">
+        {panels.map((panel, i) => (
+          <>
+            <button
+              class={`fw-node ${i === 0 ? 'fw-node--active' : ''}`}
+              data-fw-btn={i}
+              aria-label={`Panel ${panel.node}: ${panel.title}`}
+            >
+              {panel.node}
+            </button>
+            {i < panels.length - 1 && (
+              <div class="fw-connector"></div>
+            )}
+          </>
+        ))}
+      </div>
+
+      <!-- Panel Details -->
+      <div data-enter data-anim="signal-expand" data-anim-duration="0.7s" class="fw-detail-container mx-auto max-w-2xl">
+        {panels.map((panel, i) => (
+          <div class={`fw-detail ${i === 0 ? 'fw-detail--active' : ''}`} data-fw-detail={i}>
+            <h3 class="mb-3 text-center text-[length:var(--text-h2)] font-semibold sm:mb-4">
+              {panel.title}
+            </h3>
+            <p class="t-text-2 mb-4 text-center text-[length:var(--text-small)] font-light leading-relaxed sm:mb-5 sm:text-[length:var(--text-body)]">
+              {panel.body}
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              {panel.tags.map((tag) => (
+                <span class="rounded-full border border-digital-500/25 bg-digital-500/[0.05] px-3 py-1 font-[var(--font-mono)] text-[9px] text-digital-400 sm:text-[10px]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- GitHub link -->
+      <p data-enter data-anim="terminal-blink-in" data-anim-duration="0.85s" class="t-text-muted mt-6 text-center font-[var(--font-mono)] text-[9px] sm:mt-8 sm:text-[length:var(--text-mono-sm)]">
+        // open source — <a href="https://github.com/frentuka/Tecleados-ESP-Firmware" target="_blank" rel="noopener" class="text-digital-400 transition-colors hover:text-digital-300">github.com/frentuka/Tecleados-ESP-Firmware</a>
+      </p>
+    </div>
+  </div>
+
+  <span class="dev-annotation absolute bottom-16 left-4">// view: firmware | panels: {panels.length}</span>
+</section>
+
+<script>
+  const fwBtns = document.querySelectorAll<HTMLElement>('[data-fw-btn]');
+  const fwDetails = document.querySelectorAll<HTMLElement>('[data-fw-detail]');
+
+  let currentFwPanel = 0;
+
+  function goToFwPanel(index: number) {
+    if (index < 0 || index >= fwBtns.length || index === currentFwPanel) return;
+    fwBtns.forEach(b => b.classList.remove('fw-node--active'));
+    fwDetails.forEach(d => d.classList.remove('fw-detail--active'));
+    fwBtns[index].classList.add('fw-node--active');
+    fwDetails[index].classList.add('fw-detail--active');
+    currentFwPanel = index;
+  }
+
+  fwBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => goToFwPanel(i));
+  });
+
+  // Arrow keys (up/down dispatched by view engine)
+  const fwSection = document.getElementById('firmware');
+  fwSection?.addEventListener('view:internal-next', () => {
+    goToFwPanel(Math.min(currentFwPanel + 1, fwBtns.length - 1));
+  });
+  fwSection?.addEventListener('view:internal-prev', () => {
+    goToFwPanel(Math.max(currentFwPanel - 1, 0));
+  });
+
+  // Horizontal swipe within firmware view
+  if (fwSection) {
+    let startX = 0;
+    let startY = 0;
+    fwSection.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    fwSection.addEventListener('touchend', (e) => {
+      const dx = startX - e.changedTouches[0].clientX;
+      const dy = startY - e.changedTouches[0].clientY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) goToFwPanel(Math.min(currentFwPanel + 1, fwBtns.length - 1));
+        else goToFwPanel(Math.max(currentFwPanel - 1, 0));
+      }
+    }, { passive: true });
+  }
+</script>

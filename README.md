@@ -62,11 +62,11 @@ tecleados-landing-page/
 │   └── favicon.svg
 ├── src/
 │   ├── pages/
-│   │   └── index.astro  # Entry point — composes all 7 section views
+│   │   └── index.astro  # Entry point — composes all 8 section views
 │   ├── layouts/
 │   │   └── BaseLayout.astro  # Root layout: meta tags, font preload, theme init
 │   ├── components/
-│   │   ├── Navigation.astro       # Bottom nav bar with 7 view buttons + toggles
+│   │   ├── Navigation.astro       # Bottom nav bar with 8 view buttons + toggles
 │   │   ├── Footer.astro           # Brand footer with links and contact
 │   │   ├── WoodGrainBackground.astro  # Fixed canvas procedural background
 │   │   └── sections/
@@ -76,7 +76,8 @@ tecleados-landing-page/
 │   │       ├── ProcessSection.astro      # View 4 — "Proceso"
 │   │       ├── WoodGallery.astro         # View 5 — "Maderas"
 │   │       ├── DevModeSection.astro      # View 6 — "Specs"
-│   │       └── CtaSection.astro          # View 7 — "Contacto"
+│   │       ├── FirmwareSection.astro    # View 7 — "Firmware"
+│   │       └── CtaSection.astro          # View 8 — "Contacto"
 │   ├── data/
 │   │   ├── products.ts        # 4 keyboard products (name, description, status, price, wood)
 │   │   ├── process-steps.ts   # 5 manufacturing steps
@@ -103,11 +104,11 @@ tecleados-landing-page/
 
 ### Single-Page View System
 
-This site does **not scroll**. Instead it uses a custom view-switching engine (`src/scripts/view-engine.ts`) with 7 full-viewport views that transition in and out.
+This site does **not scroll**. Instead it uses a custom view-switching engine (`src/scripts/view-engine.ts`) with 8 full-viewport views that transition in and out.
 
 **Navigation methods:**
 - Arrow keys `←` / `→` — switch between views
-- Number keys `1`–`7` — jump directly to any view
+- Number keys `1`–`8` — jump directly to any view
 - Mouse wheel (debounced 900ms) — vertical navigation within views
 - Touch swipe (50px threshold) — swipe left/right to change view
 - Hash-based routing — `#inicio`, `#historia`, etc. for bookmarking
@@ -157,7 +158,8 @@ All design tokens live in `src/styles/global.css` as Tailwind v4 CSS custom prop
 | 4 | `#proceso` | ProcessSection | Interactive 5-step manufacturing timeline (Selection → QA) |
 | 5 | `#maderas` | WoodGallery | Grid of 4 Argentine wood species with swatches, origins, descriptions |
 | 6 | `#specs` | DevModeSection | Full technical specs: firmware, connectivity, materials, switches |
-| 7 | `#contacto` | CtaSection | Email capture, rotating testimonials, social links |
+| 7 | `#firmware` | FirmwareSection | DF-ONE ESP32-S3 firmware features, web configurator, roadmap |
+| 8 | `#contacto` | CtaSection | Email capture, rotating testimonials, social links |
 
 ---
 
