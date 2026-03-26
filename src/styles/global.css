@@ -557,63 +557,63 @@ body {
               visibility 0s 0s;
 }
 
-/* ── Firmware panel nodes (digital variant of step nodes) ── */
+/* ── Firmware: Tab strip + sliding carousel ── */
 
-.fw-node {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  border: 2px solid var(--t-border-solid);
-  background: var(--t-bg);
+.fw-tab {
+  position: relative;
+  padding: 6px 10px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
   color: var(--t-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.fw-tab:hover {
+  color: var(--t-text-2);
+}
+
+.fw-tab--active {
+  color: var(--color-digital-400);
+  border-bottom-color: var(--color-digital-500);
+}
+
+.fw-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.fw-track {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.fw-screen {
+  flex: 0 0 100%;
+  min-width: 100%;
+  padding: 0 2px;
+}
+
+.fw-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--t-border-solid);
+  border: none;
+  cursor: pointer;
+  padding: 0;
   transition: all 0.25s ease;
 }
 
-.fw-node:hover {
-  border-color: var(--color-digital-400);
-  color: var(--color-digital-400);
-}
-
-.fw-node--active {
-  border-color: var(--color-digital-500);
+.fw-dot--active {
   background: var(--color-digital-500);
-  color: var(--color-charcoal-900);
-  box-shadow: 0 0 14px rgba(0, 212, 230, 0.25);
-}
-
-.fw-connector {
-  width: 20px;
-  height: 2px;
-  background: var(--t-border-solid);
-  flex-shrink: 0;
-  transition: background-color 0.3s ease;
-}
-
-.fw-detail-container {
-  display: grid;
-  transition: min-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fw-detail {
-  grid-area: 1 / 1;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0s 0.35s;
-}
-
-.fw-detail--active {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0s 0s;
+  box-shadow: 0 0 8px rgba(0, 212, 230, 0.4);
+  transform: scale(1.3);
 }
 
 /* ============================================
@@ -922,16 +922,9 @@ body {
     width: 10px;
   }
 
-  .fw-node {
-    width: 36px;
-    height: 36px;
-    font-size: 0.65rem;
-    border-radius: 6px;
-    border-width: 1.5px;
-  }
-
-  .fw-connector {
-    width: 12px;
+  .fw-tab {
+    padding: 5px 6px;
+    font-size: 0.5rem;
   }
 }
 

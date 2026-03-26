@@ -1,35 +1,10 @@
 ---
-const panels = [
-  {
-    node: '01',
-    title: 'Conectividad Dual',
-    body: 'USB HID con N-Key Rollover completo vía TinyUSB — boot-compatible 6KRO y NKRO real con bitmap de 32 bytes. Bluetooth LE 5.0 con hasta 9 perfiles de emparejamiento independientes, cada uno con su dirección y bonds persistentes.',
-    tags: ['USB-C', 'BLE 5.0', 'NKRO', '9 perfiles'],
-  },
-  {
-    node: '02',
-    title: 'Capas & Macros',
-    body: '4 capas de mapeo — Base, FN1, FN2 y FN3 — con soporte de transparencia para overrides selectivos. 64 macros programables con hasta 256 eventos cada una, 8 modos de ejecución (once, hold, toggle, burst) y llamadas recursivas de hasta 5 niveles.',
-    tags: ['4 layers', '64 macros', '256 events', 'MultiAction'],
-  },
-  {
-    node: '03',
-    title: 'Configurador Web',
-    body: 'Aplicación React 19 sobre WebHID — conectás tu Tecleados por USB y configurás todo desde el navegador. Asignación visual de teclas, editor de macros, gestión de perfiles BLE, modo developer con inspección de paquetes, import/export KLE.',
-    tags: ['WebHID', 'React 19', 'Zustand', 'KLE Import'],
-  },
-  {
-    node: '04',
-    title: 'Hardware & Escaneo',
-    body: 'Matriz de 6×18 (108 teclas) escaneada a 1200 Hz con debounce de 5 escaneos. Arquitectura modular basada en eventos sobre ESP-IDF v5.5 para el ESP32-S3. LED WS2812 con feedback visual, configuración persistente en NVS flash.',
-    tags: ['ESP32-S3', '1200 Hz', 'ESP-IDF', 'NVS Flash'],
-  },
-  {
-    node: '05',
-    title: 'Roadmap',
-    body: 'Reporte de batería inteligente, conectividad 2.4 GHz vía ESP-NOW con dongle dedicado, soporte para split keyboard con comunicación host/slave, integración de pantalla OLED, y capa de compatibilidad QMK.',
-    tags: ['Batería', 'ESP-NOW', 'Split', 'OLED'],
-  },
+const tabs = [
+  { id: 'conn', label: 'Conectividad' },
+  { id: 'layers', label: 'Capas' },
+  { id: 'config', label: 'Configurador' },
+  { id: 'hw', label: 'Hardware' },
+  { id: 'road', label: 'Roadmap' },
 ];
 ---
 
@@ -48,98 +23,310 @@ const panels = [
   </div>
 
   <!-- Content -->
-  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-6 lg:px-10">
-    <div class="mx-auto w-full max-w-4xl">
+  <div class="relative z-10 flex flex-1 flex-col px-5 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10">
+    <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col">
 
-      <!-- Header -->
-      <div data-enter data-anim="signal-header" data-anim-duration="0.6s" class="mb-6 text-center sm:mb-8 lg:mb-10">
-        <div class="mb-1.5 flex items-center justify-center gap-2 sm:mb-2">
-          <span class="inline-block h-1.5 w-6 rounded-full bg-digital-500 sm:h-2 sm:w-8" aria-hidden="true"></span>
-          <p class="t-text-muted font-[var(--font-mono)] text-[length:var(--text-mono-sm)] uppercase tracking-[0.2em]">
+      <!-- Header row: title + tab strip -->
+      <div data-enter data-anim="signal-header" data-anim-duration="0.6s" class="mb-4 flex flex-col gap-3 sm:mb-5 sm:gap-4 lg:mb-6">
+        <!-- Title -->
+        <div>
+          <p class="t-text-muted mb-0.5 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.2em] sm:mb-1 sm:text-[length:var(--text-mono-sm)]">
             DF-ONE // ESP32-S3
           </p>
-          <span class="inline-block h-1.5 w-6 rounded-full bg-digital-500 sm:h-2 sm:w-8" aria-hidden="true"></span>
+          <h2 class="text-[length:var(--text-h2)] font-semibold leading-tight sm:text-[length:var(--text-h1)]">
+            Firmware propio
+          </h2>
         </div>
-        <h2 class="text-[length:var(--text-h1)] font-semibold leading-tight">
-          Firmware propio
-        </h2>
-      </div>
 
-      <!-- Panel Nodes -->
-      <div data-enter data-anim="pulse-up" data-anim-duration="0.65s" class="mb-6 flex items-center justify-center gap-1 sm:mb-8 sm:gap-2 lg:gap-3">
-        {panels.map((panel, i) => (
-          <>
+        <!-- Tab strip -->
+        <div class="fw-tabs flex gap-0.5 border-b border-[var(--t-border)] sm:gap-1">
+          {tabs.map((tab, i) => (
             <button
-              class={`fw-node ${i === 0 ? 'fw-node--active' : ''}`}
-              data-fw-btn={i}
-              aria-label={`Panel ${panel.node}: ${panel.title}`}
+              class={`fw-tab ${i === 0 ? 'fw-tab--active' : ''}`}
+              data-fw-tab={i}
+              aria-label={tab.label}
             >
-              {panel.node}
+              {tab.label}
             </button>
-            {i < panels.length - 1 && (
-              <div class="fw-connector"></div>
-            )}
-          </>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <!-- Panel Details -->
-      <div data-enter data-anim="signal-expand" data-anim-duration="0.7s" class="fw-detail-container mx-auto max-w-2xl">
-        {panels.map((panel, i) => (
-          <div class={`fw-detail ${i === 0 ? 'fw-detail--active' : ''}`} data-fw-detail={i}>
-            <h3 class="mb-3 text-center text-[length:var(--text-h2)] font-semibold sm:mb-4">
-              {panel.title}
-            </h3>
-            <p class="t-text-2 mb-4 text-center text-[length:var(--text-small)] font-light leading-relaxed sm:mb-5 sm:text-[length:var(--text-body)]">
-              {panel.body}
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-2">
-              {panel.tags.map((tag) => (
-                <span class="rounded-full border border-digital-500/25 bg-digital-500/[0.05] px-3 py-1 font-[var(--font-mono)] text-[9px] text-digital-400 sm:text-[10px]">
-                  {tag}
-                </span>
-              ))}
+      <!-- Carousel viewport -->
+      <div data-enter data-anim="signal-expand" data-anim-duration="0.7s" class="fw-viewport flex-1 overflow-hidden">
+        <div class="fw-track flex h-full" data-fw-track>
+
+          {/* ── Screen 1: Conectividad Dual ── */}
+          <div class="fw-screen" data-fw-screen="0">
+            <div class="flex h-full flex-col items-center justify-center">
+              <div class="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+                {/* USB card */}
+                <div class="rounded-xl border border-digital-500/15 bg-digital-500/[0.03] p-4 sm:p-6">
+                  <div class="mb-3 flex items-center gap-2 sm:mb-4">
+                    <span class="h-2 w-2 rounded-full bg-digital-500"></span>
+                    <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-digital-400 sm:text-xs">USB HID</span>
+                  </div>
+                  <p class="text-[length:var(--text-h2)] font-semibold leading-none sm:text-[length:var(--text-h1)]">NKRO</p>
+                  <p class="t-text-2 mt-1 text-xs leading-relaxed sm:mt-2 sm:text-[length:var(--text-small)]">
+                    N-Key Rollover completo vía TinyUSB. Boot-compatible 6KRO y modo report con bitmap de 32 bytes — hasta 231 teclas simultáneas.
+                  </p>
+                  <div class="mt-3 flex gap-2 sm:mt-4">
+                    <span class="rounded border border-digital-500/20 px-2 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">USB-C</span>
+                    <span class="rounded border border-digital-500/20 px-2 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">TinyUSB</span>
+                  </div>
+                </div>
+                {/* BLE card */}
+                <div class="rounded-xl border border-digital-500/15 bg-digital-500/[0.03] p-4 sm:p-6">
+                  <div class="mb-3 flex items-center gap-2 sm:mb-4">
+                    <span class="h-2 w-2 rounded-full bg-digital-500"></span>
+                    <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-digital-400 sm:text-xs">Bluetooth LE</span>
+                  </div>
+                  <p class="text-[length:var(--text-h2)] font-semibold leading-none sm:text-[length:var(--text-h1)]">9 perfiles</p>
+                  <p class="t-text-2 mt-1 text-xs leading-relaxed sm:mt-2 sm:text-[length:var(--text-small)]">
+                    Cada perfil con dirección estática propia y bonds persistentes en NVS. Advertising en 3 modos: pairing, reconnect y background.
+                  </p>
+                  <div class="mt-3 flex gap-2 sm:mt-4">
+                    <span class="rounded border border-digital-500/20 px-2 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">BLE 5.0</span>
+                    <span class="rounded border border-digital-500/20 px-2 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">NimBLE</span>
+                    <span class="rounded border border-digital-500/20 px-2 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">HOGP</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      <!-- GitHub link -->
-      <p data-enter data-anim="terminal-blink-in" data-anim-duration="0.85s" class="t-text-muted mt-6 text-center font-[var(--font-mono)] text-[9px] sm:mt-8 sm:text-[length:var(--text-mono-sm)]">
-        // open source — <a href="https://github.com/frentuka/Tecleados-ESP-Firmware" target="_blank" rel="noopener" class="text-digital-400 transition-colors hover:text-digital-300">github.com/frentuka/Tecleados-ESP-Firmware</a>
-      </p>
+          {/* ── Screen 2: Capas & Macros ── */}
+          <div class="fw-screen" data-fw-screen="1">
+            <div class="flex h-full flex-col items-center justify-center">
+              <div class="w-full max-w-3xl">
+                {/* Layer stack visual */}
+                <div class="mx-auto mb-4 flex max-w-md flex-col gap-1.5 sm:mb-6 sm:gap-2">
+                  {['Base', 'FN1', 'FN2', 'FN3'].map((layer, li) => (
+                    <div class:list={[
+                      'flex items-center justify-between rounded-lg border px-4 py-2 font-[var(--font-mono)] text-xs transition-all sm:px-5 sm:py-3 sm:text-sm',
+                      li === 0
+                        ? 'border-digital-500/30 bg-digital-500/10 text-digital-400'
+                        : 'border-digital-500/10 bg-digital-500/[0.03] text-digital-400/60',
+                    ]}>
+                      <span>Layer {li}</span>
+                      <span class="text-[9px] opacity-60 sm:text-[10px]">{layer}</span>
+                      <span class="text-[9px] opacity-40 sm:text-[10px]">108 keys</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Macro info */}
+                <div class="mx-auto grid max-w-md grid-cols-3 gap-2 rounded-xl border border-digital-500/10 bg-digital-500/[0.02] p-3 text-center sm:gap-4 sm:p-5">
+                  <div>
+                    <p class="text-lg font-semibold text-digital-400 sm:text-2xl">64</p>
+                    <p class="t-text-muted font-[var(--font-mono)] text-[8px] uppercase sm:text-[10px]">macros</p>
+                  </div>
+                  <div>
+                    <p class="text-lg font-semibold text-digital-400 sm:text-2xl">256</p>
+                    <p class="t-text-muted font-[var(--font-mono)] text-[8px] uppercase sm:text-[10px]">eventos</p>
+                  </div>
+                  <div>
+                    <p class="text-lg font-semibold text-digital-400 sm:text-2xl">8</p>
+                    <p class="t-text-muted font-[var(--font-mono)] text-[8px] uppercase sm:text-[10px]">modos</p>
+                  </div>
+                </div>
+                <p class="t-text-muted mx-auto mt-3 max-w-md text-center text-[10px] leading-relaxed sm:mt-4 sm:text-xs">
+                  Transparencia selectiva entre capas · PressRelease y MultiAction (tap/double-tap/hold) · Recursión de macros hasta 5 niveles
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Screen 3: Configurador Web ── */}
+          <div class="fw-screen" data-fw-screen="2">
+            <div class="flex h-full flex-col items-center justify-center">
+              <div class="w-full max-w-3xl">
+                <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
+                  {/* Terminal mock */}
+                  <div class="w-full flex-shrink-0 rounded-lg border border-digital-500/20 bg-charcoal-700/60 sm:w-auto">
+                    {/* Window chrome */}
+                    <div class="flex items-center gap-1.5 border-b border-digital-500/10 px-3 py-1.5">
+                      <span class="h-1.5 w-1.5 rounded-full bg-human-500/50"></span>
+                      <span class="h-1.5 w-1.5 rounded-full bg-human-300/30"></span>
+                      <span class="h-1.5 w-1.5 rounded-full bg-natural-500/40"></span>
+                      <span class="ml-2 font-[var(--font-mono)] text-[7px] text-sage-500 sm:text-[8px]">configurador.tecleados</span>
+                    </div>
+                    <div class="p-3 font-[var(--font-mono)] text-[9px] leading-loose text-digital-400 sm:p-4 sm:text-[11px]">
+                      <span class="text-sage-500">$</span> connect<span class="text-digital-300">.</span>webHID<span class="text-sage-500">()</span><br/>
+                      <span class="text-sage-500">&gt;</span> <span class="text-natural-400">device found</span> :: DF-ONE<br/>
+                      <span class="text-sage-500">&gt;</span> layers<span class="text-sage-500">:</span> 4 <span class="text-sage-500">|</span> macros<span class="text-sage-500">:</span> 64<br/>
+                      <span class="text-sage-500">&gt;</span> ble_profiles<span class="text-sage-500">:</span> 9<br/>
+                      <span class="text-sage-500">&gt;</span> protocol<span class="text-sage-500">:</span> blast<span class="text-digital-300">+</span>reconcile<br/>
+                      <span class="text-sage-500">&gt;</span> <span class="text-human-400">ready</span> <span class="animate-[cursorBlink_1s_infinite] text-digital-300">_</span>
+                    </div>
+                  </div>
+                  {/* Description */}
+                  <div class="text-center sm:text-left">
+                    <h3 class="mb-2 text-[length:var(--text-h3)] font-semibold sm:mb-3">
+                      Configurá todo desde el navegador
+                    </h3>
+                    <p class="t-text-2 mb-3 text-xs leading-relaxed sm:mb-4 sm:text-[length:var(--text-small)]">
+                      React 19 sobre WebHID con protocolo Blast+Reconcile y validación CRC-8. Asignación visual de teclas, editor de macros, gestión de perfiles BLE, modo developer con inspección de paquetes.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-1.5 sm:justify-start sm:gap-2">
+                      <span class="rounded-full border border-digital-500/25 px-2.5 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">WebHID</span>
+                      <span class="rounded-full border border-digital-500/25 px-2.5 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">CRC-8</span>
+                      <span class="rounded-full border border-digital-500/25 px-2.5 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">Zustand</span>
+                      <span class="rounded-full border border-digital-500/25 px-2.5 py-0.5 font-[var(--font-mono)] text-[8px] text-digital-400 sm:text-[9px]">KLE Import</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Screen 4: Hardware & Escaneo ── */}
+          <div class="fw-screen" data-fw-screen="3">
+            <div class="flex h-full flex-col items-center justify-center">
+              <div class="mx-auto grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+                {[
+                  { value: '1200', unit: 'Hz', label: 'Scan rate' },
+                  { value: '6×18', unit: '', label: 'Matriz' },
+                  { value: '108', unit: '', label: 'Teclas' },
+                  { value: '5', unit: 'ms', label: 'Debounce' },
+                ].map((stat) => (
+                  <div class="rounded-xl border border-digital-500/15 bg-digital-500/[0.03] p-4 text-center sm:p-5">
+                    <p class="font-semibold leading-none sm:text-3xl">
+                      <span class="text-xl text-digital-400 sm:text-3xl">{stat.value}</span>
+                      {stat.unit && <span class="ml-0.5 text-xs text-digital-400/60 sm:text-sm">{stat.unit}</span>}
+                    </p>
+                    <p class="t-text-muted mt-1 font-[var(--font-mono)] text-[8px] uppercase tracking-[0.1em] sm:mt-2 sm:text-[10px]">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div class="mx-auto mt-4 max-w-lg rounded-lg border border-digital-500/10 bg-digital-500/[0.02] p-3 sm:mt-5 sm:p-4">
+                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-[var(--font-mono)] text-[9px] sm:text-[10px]">
+                  <span class="t-text-2">ESP32-S3</span>
+                  <span class="text-digital-500/30">|</span>
+                  <span class="t-text-2">ESP-IDF v5.5</span>
+                  <span class="text-digital-500/30">|</span>
+                  <span class="t-text-2">NVS Flash 512KB</span>
+                  <span class="text-digital-500/30">|</span>
+                  <span class="t-text-2">WS2812 RGB</span>
+                  <span class="text-digital-500/30">|</span>
+                  <span class="t-text-2">FreeRTOS</span>
+                </div>
+              </div>
+              <p class="t-text-muted mx-auto mt-3 max-w-md text-center text-[10px] leading-relaxed sm:mt-4 sm:text-xs">
+                Arquitectura modular basada en eventos · Bus pub/sub sobre esp_event · Idle con GPIO interrupts para bajo consumo
+              </p>
+            </div>
+          </div>
+
+          {/* ── Screen 5: Roadmap ── */}
+          <div class="fw-screen" data-fw-screen="4">
+            <div class="flex h-full flex-col items-center justify-center">
+              <div class="mx-auto w-full max-w-md">
+                {[
+                  { title: 'Batería inteligente', desc: 'Reporte de nivel real de batería con estimación de uso restante.', status: 'pronto' },
+                  { title: '2.4 GHz via ESP-NOW', desc: 'Dongle USB dedicado para conectividad inalámbrica de baja latencia.', status: 'pronto' },
+                  { title: 'Split keyboard', desc: 'Comunicación host/slave para teclados divididos.', status: 'desarrollo' },
+                  { title: 'Pantalla OLED', desc: 'Integración de display para estado, capas y perfiles.', status: 'desarrollo' },
+                  { title: 'Compatibilidad QMK', desc: 'Capa de compatibilidad para importar keymaps QMK existentes.', status: 'futuro' },
+                ].map((item, idx) => (
+                  <div class:list={[
+                    't-border flex items-start gap-3 border-b py-3 last:border-0 sm:gap-4 sm:py-4',
+                  ]}>
+                    {/* Timeline dot + line */}
+                    <div class="flex flex-col items-center pt-1">
+                      <span class:list={[
+                        'h-2.5 w-2.5 rounded-full sm:h-3 sm:w-3',
+                        item.status === 'pronto' ? 'bg-natural-500' : item.status === 'desarrollo' ? 'bg-digital-500/60' : 'bg-sage-500/40',
+                      ]}></span>
+                    </div>
+                    {/* Content */}
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold sm:text-sm">{item.title}</span>
+                        <span class:list={[
+                          'rounded-full px-2 py-0.5 font-[var(--font-mono)] text-[7px] sm:text-[8px]',
+                          item.status === 'pronto' ? 'bg-natural-500/15 text-natural-400'
+                            : item.status === 'desarrollo' ? 'bg-digital-500/10 text-digital-400'
+                            : 'bg-sage-500/10 text-sage-400',
+                        ]}>
+                          {item.status === 'pronto' ? 'pronto' : item.status === 'desarrollo' ? 'en desarrollo' : 'planeado'}
+                        </span>
+                      </div>
+                      <p class="t-text-2 mt-0.5 text-[10px] leading-relaxed sm:text-xs">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>{/* /fw-track */}
+      </div>{/* /fw-viewport */}
+
+      <!-- Bottom: progress + github -->
+      <div data-enter data-anim="terminal-blink-in" data-anim-duration="0.85s" class="mt-auto flex flex-col items-center gap-2 pb-3 pt-3 sm:gap-3 sm:pb-4 sm:pt-4">
+        {/* Progress bar */}
+        <div class="flex items-center gap-1.5">
+          {tabs.map((_, i) => (
+            <button
+              class={`fw-dot ${i === 0 ? 'fw-dot--active' : ''}`}
+              data-fw-dot={i}
+              aria-label={`Ir a panel ${i + 1}`}
+            ></button>
+          ))}
+        </div>
+        {/* GitHub link */}
+        <p class="t-text-muted font-[var(--font-mono)] text-[9px] sm:text-[length:var(--text-mono-sm)]">
+          // open source — <a href="https://github.com/frentuka/Tecleados-ESP-Firmware" target="_blank" rel="noopener" class="text-digital-400 transition-colors hover:text-digital-300">github.com/frentuka/Tecleados-ESP-Firmware</a>
+        </p>
+      </div>
     </div>
   </div>
 
-  <span class="dev-annotation absolute bottom-16 left-4">// view: firmware | panels: {panels.length}</span>
+  <span class="dev-annotation absolute bottom-16 left-4">// view: firmware | screens: 5</span>
 </section>
 
 <script>
-  const fwBtns = document.querySelectorAll<HTMLElement>('[data-fw-btn]');
-  const fwDetails = document.querySelectorAll<HTMLElement>('[data-fw-detail]');
+  const fwTabs = document.querySelectorAll<HTMLElement>('[data-fw-tab]');
+  const fwDots = document.querySelectorAll<HTMLElement>('[data-fw-dot]');
+  const fwTrack = document.querySelector<HTMLElement>('[data-fw-track]');
 
-  let currentFwPanel = 0;
+  let currentFw = 0;
+  const totalFw = fwTabs.length;
 
-  function goToFwPanel(index: number) {
-    if (index < 0 || index >= fwBtns.length || index === currentFwPanel) return;
-    fwBtns.forEach(b => b.classList.remove('fw-node--active'));
-    fwDetails.forEach(d => d.classList.remove('fw-detail--active'));
-    fwBtns[index].classList.add('fw-node--active');
-    fwDetails[index].classList.add('fw-detail--active');
-    currentFwPanel = index;
+  function goToFw(index: number) {
+    if (index < 0 || index >= totalFw || index === currentFw) return;
+
+    // Update track position
+    if (fwTrack) {
+      fwTrack.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    // Update tabs
+    fwTabs.forEach((t, i) => t.classList.toggle('fw-tab--active', i === index));
+
+    // Update dots
+    fwDots.forEach((d, i) => d.classList.toggle('fw-dot--active', i === index));
+
+    currentFw = index;
   }
 
-  fwBtns.forEach((btn, i) => {
-    btn.addEventListener('click', () => goToFwPanel(i));
+  // Tab clicks
+  fwTabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goToFw(i));
   });
 
-  // Arrow keys (up/down dispatched by view engine)
+  // Dot clicks
+  fwDots.forEach((dot, i) => {
+    dot.addEventListener('click', () => goToFw(i));
+  });
+
+  // Arrow keys (up/down dispatched by view engine for internal nav)
   const fwSection = document.getElementById('firmware');
   fwSection?.addEventListener('view:internal-next', () => {
-    goToFwPanel(Math.min(currentFwPanel + 1, fwBtns.length - 1));
+    goToFw(Math.min(currentFw + 1, totalFw - 1));
   });
   fwSection?.addEventListener('view:internal-prev', () => {
-    goToFwPanel(Math.max(currentFwPanel - 1, 0));
+    goToFw(Math.max(currentFw - 1, 0));
   });
 
   // Horizontal swipe within firmware view
@@ -154,8 +341,8 @@ const panels = [
       const dx = startX - e.changedTouches[0].clientX;
       const dy = startY - e.changedTouches[0].clientY;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 0) goToFwPanel(Math.min(currentFwPanel + 1, fwBtns.length - 1));
-        else goToFwPanel(Math.max(currentFwPanel - 1, 0));
+        if (dx > 0) goToFw(Math.min(currentFw + 1, totalFw - 1));
+        else goToFw(Math.max(currentFw - 1, 0));
       }
     }, { passive: true });
   }
