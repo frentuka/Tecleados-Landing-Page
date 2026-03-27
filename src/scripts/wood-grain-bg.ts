@@ -493,17 +493,18 @@ export function initWoodGrainBackground() {
     ctx.drawImage(offscreen, 0, 0, W, H);
 
     // Overlay passes
-    renderFiberLines(knots);
+    renderFiberLines(knots, ctx);
     renderMicroTexture();
 
-    // Cache the fully-rendered frame for the animation loop
-    if (!staticGrain || staticGrain.width !== canvas!.width || staticGrain.height !== canvas!.height) {
+    // Cache the fully-rendered frame for animation
+    const cw = canvas!.width;
+    const ch = canvas!.height;
+    if (!staticGrain || staticGrain.width !== cw || staticGrain.height !== ch) {
       staticGrain = document.createElement('canvas');
-      staticGrain.width = canvas!.width;
-      staticGrain.height = canvas!.height;
+      staticGrain.width = cw;
+      staticGrain.height = ch;
     }
-    const sc = staticGrain.getContext('2d');
-    if (sc) sc.drawImage(canvas!, 0, 0);
+    staticGrain.getContext('2d')!.drawImage(canvas!, 0, 0);
 
     // Fade in on first render — html bg color is already set so there's
     // no white flash, just a smooth shift from flat color to texture.
@@ -518,7 +519,7 @@ export function initWoodGrainBackground() {
   // FIBER LINE OVERLAY — fine grain lines that follow the deflected field
   // ═══════════════════════════════════════════════════════════════════════════
 
-  function renderFiberLines(knots: Knot[]) {
+  function renderFiberLines(knots: Knot[], c: CanvasRenderingContext2D) {
     // Fiber lines follow the grain direction (along the longer axis)
     const primaryLen = isPortrait ? H : W;
     const secondaryLen = isPortrait ? W : H;
@@ -545,10 +546,10 @@ export function initWoodGrainBackground() {
       const colorT = 0.3 + rng() * 0.4;
       const [lr, lg, lb] = sampleGradient(palette.latewood, colorT);
 
-      ctx.strokeStyle = `rgba(${lr | 0},${lg | 0},${lb | 0},${alpha})`;
-      ctx.lineWidth = lineWidth;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
+      c.strokeStyle = `rgba(${lr | 0},${lg | 0},${lb | 0},${alpha})`;
+      c.lineWidth = lineWidth;
+      c.lineCap = 'round';
+      c.beginPath();
 
       const steps = Math.max(60, Math.floor(primaryLen / 10));
       let prevX = 0, prevY = 0;
@@ -596,7 +597,7 @@ export function initWoodGrainBackground() {
         const cy = isPortrait ? prim : pos;
 
         if (si === 0) {
-          ctx.moveTo(cx, cy);
+          c.moveTo(cx, cy);
         } else {
           // Skip degenerate micro-segments — they cause pixelation
           const dx = cx - prevX;
@@ -604,12 +605,12 @@ export function initWoodGrainBackground() {
           if (dx * dx + dy * dy < 1.0) continue;
           const mx = (prevX + cx) / 2;
           const my = (prevY + cy) / 2;
-          ctx.quadraticCurveTo(prevX, prevY, mx, my);
+          c.quadraticCurveTo(prevX, prevY, mx, my);
         }
         prevX = cx;
         prevY = cy;
       }
-      ctx.stroke();
+      c.stroke();
     }
   }
 
@@ -651,22 +652,19 @@ export function initWoodGrainBackground() {
       if (staticGrain) {
         const t = (ts - t0) * 0.001;
 
-        // Restore static grain each frame
+        // Slow breathing scale — the entire grain gently pulses.
+        // ±0.3% scale oscillating over ~20s, centered on the viewport.
+        // Combined with a very slow drift (±4px) so it feels organic.
+        const breathe = 1.0 + 0.003 * Math.sin(t * 0.314);   // ~20s period
+        const driftX  = 4.0 * Math.sin(t * 0.227);            // ~28s period
+        const driftY  = 2.5 * Math.cos(t * 0.169);            // ~37s period
+
+        ctx.save();
+        ctx.translate(W / 2 + driftX, H / 2 + driftY);
+        ctx.scale(breathe, breathe);
+        ctx.translate(-W / 2, -H / 2);
         ctx.drawImage(staticGrain, 0, 0, W, H);
-
-        // Slow ambient light drift — soft radial glow on a Lissajous path.
-        // Periods ~22s and ~31s (incommensurable so the pattern never repeats).
-        const sx = W * (0.5 + 0.38 * Math.sin(t * 0.2856));
-        const sy = H * (0.5 + 0.28 * Math.cos(t * 0.2027));
-        const r  = Math.max(W, H) * 0.80;
-        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-        const shimAlpha = isDark ? 0.028 : 0.020;
-
-        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
-        g.addColorStop(0, `rgba(255,255,255,${shimAlpha})`);
-        g.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
       }
 
       rafId = requestAnimationFrame(frame);
